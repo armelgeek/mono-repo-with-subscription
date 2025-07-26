@@ -1,5 +1,6 @@
 import { boolean, jsonb, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 import type { Action, Subject } from '@/domain/types/permission.type'
+import { subscriptionPlans } from './subscription-plan.schema'
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
@@ -7,9 +8,20 @@ export const users = pgTable('users', {
   firstname: text('firstname'),
   lastname: text('lastname'),
   email: text('email').notNull().unique(),
+  lastLoginAt: timestamp('last_login_at'),
   emailVerified: boolean('email_verified').notNull(),
+  role: text('role').notNull().default('user'),
   image: text('image'),
   isAdmin: boolean('is_admin').notNull().default(false),
+  isTrialActive: boolean('is_trial_active').notNull().default(false),
+  hasTrialUsed: boolean('has_trial_used').notNull().default(false),
+  trialCanceled: boolean('trial_canceled').notNull().default(false),
+  trialStartDate: timestamp('trial_start_date'),
+  trialEndDate: timestamp('trial_end_date'),
+  stripeCustomerId: text('stripe_customer_id').unique(),
+  stripeSubscriptionId: text('stripe_subscription_id').unique(),
+  planId: text('plan_id').references(() => subscriptionPlans.id),
+  stripeCurrentPeriodEnd: timestamp('stripe_current_period_end'),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull()
 })
@@ -74,7 +86,10 @@ export const subscriptionHistory = pgTable('subscription_history', {
   newPlan: text('new_plan'),
   amount: text('amount'),
   currency: text('currency'),
+  adjustmentType: text('adjustment_type'),
   status: text('status').notNull(),
+  stripeInvoiceUrl: text('stripe_invoice_url'),
+  interval: text('interval'),
   timestamp: timestamp('timestamp').notNull().defaultNow()
 })
 

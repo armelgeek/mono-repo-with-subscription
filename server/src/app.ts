@@ -54,7 +54,12 @@ export class App {
     )
     this.app.use('*', responseMiddleware())
     this.app.use(addSession)
-    this.app.use(sessionValidator)
+    this.app.use('*', (c, next) => {
+      if (c.req.method === 'GET' && c.req.path === '/api/v1/subscription-plans') {
+        return next()
+      }
+      return sessionValidator(c, next)
+    })
   }
 
   private initializeSwaggerUI() {

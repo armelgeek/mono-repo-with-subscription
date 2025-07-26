@@ -5,12 +5,19 @@ export const User = z.object({
   name: z.string(),
   firstname: z.string().optional(),
   lastname: z.string().optional(),
-  email: z.string().email(),
+  email: z.string(),
   emailVerified: z.boolean(),
   image: z.string().optional(),
-  isAdmin: z.boolean(),
-  createdAt: z.string().or(z.date()),
-  updatedAt: z.string().or(z.date())
+  isAdmin: z.boolean().default(false),
+  lastLoginAt: z.date().nullable(),
+  isTrialActive: z.boolean().default(false),
+  hasUsedTrial: z.boolean().default(false),
+  trialStartDate: z.date().optional(),
+  trialEndDate: z.date().optional(),
+  stripeCustomerId: z.string().optional(),
+  stripeSubscriptionId: z.string().optional(),
+  stripePriceId: z.string().optional(),
+  stripeCurrentPeriodEnd: z.date().optional(),
+  createdAt: z.date(),
+  updatedAt: z.date()
 })
-
-export type UserType = z.infer<typeof User>

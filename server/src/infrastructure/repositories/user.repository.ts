@@ -1,130 +1,164 @@
-import process from 'node:process'
-import { count, eq } from 'drizzle-orm'
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
-import type { UserType } from '@/domain/models/user.model'
-import type { UserRepositoryInterface } from '@/domain/repositories/user.repository.interface'
-import { users } from '../database/schema/auth'
+import { and, eq, ilike, not, or, sql } from 'drizzle-orm'
+import type { User } from '@/domain/models/user.model'
+import type {
+  PaginatedUsers,
+  UserFilter,
+  UserRepositoryInterface
+} from '@/domain/repositories/user.repository.interface'
+import { db } from '../database/db'
+
+import { users } from '../database/schema'
+import type { z } from 'zod'
 
 export class UserRepository implements UserRepositoryInterface {
-  private db: ReturnType<typeof drizzle>
+  async findById(id: string): Promise<z.infer<typeof User> | null> {
+    const [user] = await db.select().from(users).where(eq(users.id, id))
 
-  constructor() {
-    const connectionString = process.env.DATABASE_URL!
-    const client = postgres(connectionString)
-    this.db = drizzle(client)
-  }
-
-  async findById(id: string): Promise<UserType | null> {
-    const result = await this.db.select().from(users).where(eq(users.id, id)).limit(1)
-    if (!result.length) return null
+    if (!user) return null
 
     return {
-      ...result[0],
-      firstname: result[0].firstname || undefined,
-      lastname: result[0].lastname || undefined,
-      image: result[0].image || undefined,
-      createdAt: result[0].createdAt.toISOString(),
-      updatedAt: result[0].updatedAt.toISOString()
+      id: user.id,
+      name: user.name,
+      firstname: user.firstname || undefined,
+      lastname: user.lastname || undefined,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      lastLoginAt: user.lastLoginAt || null,
+      image: user.image || undefined,
+      isAdmin: user.isAdmin,
+      isTrialActive: user.isTrialActive,
+      hasUsedTrial: user.hasTrialUsed,
+      trialStartDate: user.trialStartDate || undefined,
+      trialEndDate: user.trialEndDate || undefined,
+      stripeCustomerId: user.stripeCustomerId || undefined,
+      stripeSubscriptionId: user.stripeSubscriptionId || undefined,
+      stripePriceId: user.planId || undefined,
+      stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd || undefined,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
     }
   }
 
-  async findByEmail(email: string): Promise<UserType | null> {
-    const result = await this.db.select().from(users).where(eq(users.email, email)).limit(1)
-    if (!result.length) return null
+  async findAll(): Promise<z.infer<typeof User>[]> {
+    const dbUsers = await db.select().from(users)
 
-    return {
-      ...result[0],
-      firstname: result[0].firstname || undefined,
-      lastname: result[0].lastname || undefined,
-      image: result[0].image || undefined,
-      createdAt: result[0].createdAt.toISOString(),
-      updatedAt: result[0].updatedAt.toISOString()
-    }
+    return dbUsers.map((user) => ({
+      id: user.id,
+      name: user.name,
+      firstname: user.firstname || undefined,
+      lastname: user.lastname || undefined,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      lastLoginAt: user.lastLoginAt || null,
+      image: user.image || undefined,
+      isAdmin: user.isAdmin,
+      isTrialActive: user.isTrialActive,
+      hasUsedTrial: user.hasTrialUsed,
+      trialStartDate: user.trialStartDate || undefined,
+      trialEndDate: user.trialEndDate || undefined,
+      stripeCustomerId: user.stripeCustomerId || undefined,
+      stripeSubscriptionId: user.stripeSubscriptionId || undefined,
+      stripePriceId: user.planId || undefined,
+      stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd || undefined,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    }))
   }
 
-  async findAll(
-    page: number = 1,
-    limit: number = 10
-  ): Promise<{ items: UserType[]; total: number; page: number; limit: number; totalPages: number }> {
+  async findPaginatedUsers(filter: UserFilter): Promise<PaginatedUsers> {
+    const page = filter.page || 1
+    const limit = filter.limit || 10
     const offset = (page - 1) * limit
 
-    const [items, totalResult] = await Promise.all([
-      this.db.select().from(users).limit(limit).offset(offset),
-      this.db.select({ count: count() }).from(users)
-    ])
+    const conditions = []
 
-    const total = totalResult[0].count
-    const totalPages = Math.ceil(total / limit)
+    const baseQuery = db.select().from(users)
+
+    if (filter.role) {
+      if (filter.role === 'not_user') {
+        conditions.push(not(eq(users.role, 'user')))
+      } else {
+        conditions.push(eq(users.role, filter.role))
+      }
+    }
+
+    if (filter.search) {
+      conditions.push(
+        or(
+          ilike(users.name, `%${filter.search}%`),
+          ilike(users.firstname || '', `%${filter.search}%`),
+          ilike(users.lastname || '', `%${filter.search}%`)
+        )
+      )
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined
+    const query = whereClause ? baseQuery.where(whereClause) : baseQuery
+
+    const [{ count }] = await db
+      .select({
+        count: sql<number>`count(${users.id})::int`
+      })
+      .from(query.as('filtered_users'))
+
+    const total = count
+
+    const results = await query.orderBy(users.createdAt).limit(limit).offset(offset)
+
+    const mappedUsers = results.map((user) => {
+      return {
+        id: user.id,
+        name: user.name,
+        firstname: user.firstname || undefined,
+        lastname: user.lastname || undefined,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        image: user.image || undefined,
+        isAdmin: user.isAdmin,
+        isTrialActive: user.isTrialActive,
+        hasUsedTrial: user.hasTrialUsed,
+        trialStartDate: user.trialStartDate || undefined,
+        trialEndDate: user.trialEndDate || undefined,
+        stripeCustomerId: user.stripeCustomerId || undefined,
+        stripeSubscriptionId: user.stripeSubscriptionId || undefined,
+        stripePriceId: user.planId || undefined,
+        stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd || undefined,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        lastLoginAt: user.lastLoginAt || null,
+        role: user.role || 'user'
+      }
+    })
 
     return {
-      items: items.map((item) => ({
-        ...item,
-        firstname: item.firstname || undefined,
-        lastname: item.lastname || undefined,
-        image: item.image || undefined,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString()
-      })),
+      users: mappedUsers,
       total,
       page,
-      limit,
-      totalPages
+      limit
     }
   }
 
-  async save(user: UserType): Promise<UserType> {
-    const userData = {
-      ...user,
-      firstname: user.firstname || null,
-      lastname: user.lastname || null,
-      image: user.image || null,
-      createdAt: new Date(user.createdAt),
-      updatedAt: new Date(user.updatedAt)
-    }
+  async findByEmail(email: string): Promise<z.infer<typeof User> | null> {
+    const [user] = await db.select().from(users).where(eq(users.email, email))
 
-    const result = await this.db.insert(users).values(userData).returning()
+    if (!user) return null
 
     return {
-      ...result[0],
-      firstname: result[0].firstname || undefined,
-      lastname: result[0].lastname || undefined,
-      image: result[0].image || undefined,
-      createdAt: result[0].createdAt.toISOString(),
-      updatedAt: result[0].updatedAt.toISOString()
+      id: user.id,
+      name: user.name,
+      firstname: user.firstname || undefined,
+      lastname: user.lastname || undefined,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      lastLoginAt: user.lastLoginAt || null,
+      image: user.image || undefined,
+      isAdmin: user.isAdmin,
+      isTrialActive: user.isTrialActive,
+      hasUsedTrial: user.hasTrialUsed,
+      trialStartDate: user.trialStartDate || undefined,
+      trialEndDate: user.trialEndDate || undefined,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
     }
-  }
-
-  async update(id: string, data: Partial<UserType>): Promise<UserType | null> {
-    const updateData: any = {
-      firstname: data.firstname || null,
-      lastname: data.lastname || null,
-      image: data.image || null,
-      updatedAt: new Date()
-    }
-
-    // Only include fields that are actually being updated
-    if (data.name !== undefined) updateData.name = data.name
-    if (data.email !== undefined) updateData.email = data.email
-    if (data.emailVerified !== undefined) updateData.emailVerified = data.emailVerified
-    if (data.isAdmin !== undefined) updateData.isAdmin = data.isAdmin
-
-    const result = await this.db.update(users).set(updateData).where(eq(users.id, id)).returning()
-
-    if (!result.length) return null
-
-    return {
-      ...result[0],
-      firstname: result[0].firstname || undefined,
-      lastname: result[0].lastname || undefined,
-      image: result[0].image || undefined,
-      createdAt: result[0].createdAt.toISOString(),
-      updatedAt: result[0].updatedAt.toISOString()
-    }
-  }
-
-  async remove(id: string): Promise<boolean> {
-    const result = await this.db.delete(users).where(eq(users.id, id)).returning()
-    return result.length > 0
   }
 }

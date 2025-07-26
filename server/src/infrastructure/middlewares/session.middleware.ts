@@ -5,12 +5,18 @@ const addSession = async (c: Context, next: Next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers })
 
   if (!session) {
-    c.set('user', null)
+    c.set('user', null as unknown as { id: string; email: string; permissions: []; isAdmin?: boolean })
     c.set('session', null)
     return next()
   }
 
-  c.set('user', session.user)
+  const authUser = {
+    ...session.user,
+    id: session.user.id,
+    permissions: [],
+    isAdmin: session.user.isAdmin
+  }
+  c.set('user', authUser)
   c.set('session', session.session)
 
   return next()

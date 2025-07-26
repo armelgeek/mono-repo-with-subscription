@@ -12,7 +12,7 @@ export {
   users,
   verifications
 } from './auth'
-
+export * from './subscription-plan.schema'
 export const userRolesRelations = relations(userRoles, ({ one }) => ({
   user: one(roles, {
     fields: [userRoles.userId],
