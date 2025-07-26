@@ -74,13 +74,16 @@ export abstract class BaseRepository<
    */
   protected transformForInsert(entity: TCreateEntity): any {
     const now = new Date()
+    // Remove 'id' if present (for serial PK tables)
+    const { id, ...rest } = entity as any
     return {
-      ...entity,
-      createdAt: entity.createdAt ? new Date(entity.createdAt) : now,
-      updatedAt: entity.updatedAt ? new Date(entity.updatedAt) : now,
-      // Transform undefined to null for database compatibility
-      ...Object.keys(entity).reduce((acc, key) => {
-        if ((entity as any)[key] === undefined) {
+      ...rest,
+      createdAt: rest.createdAt ? new Date(rest.createdAt) : now,
+      updatedAt: rest.updatedAt ? new Date(rest.updatedAt) : now,
+      // Transform undefined or empty string to null for database compatibility
+      ...Object.keys(rest).reduce((acc, key) => {
+        const value = rest[key];
+        if (value === undefined || value === '') {
           acc[key] = null
         }
         return acc
@@ -96,12 +99,13 @@ export abstract class BaseRepository<
     return {
       ...entity,
       updatedAt: new Date(),
-      // Transform undefined to null for database compatibility
+      // Transform undefined or empty string to null for database compatibility
       ...Object.keys(entity).reduce((acc, key) => {
-        if ((entity as any)[key] === undefined) {
-          acc[key] = null
+        const value = (entity as any)[key];
+        if (value === undefined || value === "") {
+          acc[key] = null;
         }
-        return acc
+        return acc;
       }, {} as any)
     }
   }

@@ -4,10 +4,10 @@ import { cn } from '@/shared/lib/utils';
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto">
+    <div className="relative w-full overflow-auto rounded-lg border border-border bg-white shadow-sm">
       <table
         ref={ref}
-        className={cn('w-full caption-bottom text-sm', className)}
+        className={cn('w-full caption-bottom text-xs whitespace-nowrap', className)}
         {...props}
       />
     </div>
@@ -33,7 +33,7 @@ const TableBody = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tbody
     ref={ref}
-    className={cn('[&_tr:last-child]:border-0', className)}
+  className={cn('[&_tr:last-child]:border-0', className)}
     {...props}
   />
 ));
@@ -46,7 +46,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      'border-t border-border bg-muted/50 font-medium [&>tr]:last:border-b-0',
+      'border-t border-border bg-muted/30 font-medium [&>tr]:last:border-b-0',
       className,
     )}
     {...props}
@@ -59,7 +59,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        'border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted',
+        'border-b border-border transition-colors hover:bg-muted/20 data-[state=selected]:bg-muted/40',
         className,
       )}
       {...props}
@@ -75,7 +75,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0',
+      'h-8 px-2 text-left align-middle font-semibold text-muted-foreground bg-muted/10 [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0',
       className,
     )}
     {...props}
@@ -89,7 +89,7 @@ const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn('p-3 align-middle [&:has([role=checkbox])]:pr-0', className)}
+  className={cn('p-2 align-middle text-xs [&:has([role=checkbox])]:pr-0', className)}
     {...props}
   />
 ));
@@ -101,7 +101,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn('mt-4 text-sm text-muted-foreground', className)}
+  className={cn('mt-2 text-xs text-muted-foreground', className)}
     {...props}
   />
 ));

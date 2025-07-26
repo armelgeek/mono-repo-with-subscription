@@ -259,43 +259,77 @@ export function SimpleAdminPage<T extends Record<string, unknown>>({
       {
         accessorKey: '__actions__',
         header: 'Actions',
-        cell: ({ row }: { row: Row<T> }) => (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost" aria-label="Actions">
-                <EllipsisVertical className="w-3 h-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {config.actions?.update && (
-                <DropdownMenuItem onClick={() => {
-                  let parsed: T | undefined;
-                  const configTyped = config as AdminConfigWithLegacyParse<T>;
-                  const parseFn = config.parseEditItem || configTyped.parseData;
-                  if (parseFn) {
-                    try {
-                      const result = parseFn(row.original);
-                      parsed = { ...row.original, ...result } as T;
-                    } catch (e) {
-                      console.error('parseEditItem/parseData error:', e, row.original);
-                      return;
+        cell: ({ row }: { row: Row<T> }) => {
+          // Access to create mutation if available
+          const canDuplicate = !!config.actions?.create && typeof create === 'function';
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="ghost" aria-label="Actions">
+                  <EllipsisVertical className="w-3 h-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {config.actions?.update && (
+                  <DropdownMenuItem onClick={() => {
+                    let parsed: T | undefined;
+                    const configTyped = config as AdminConfigWithLegacyParse<T>;
+                    const parseFn = config.parseEditItem || configTyped.parseData;
+                    if (parseFn) {
+                      try {
+                        const result = parseFn(row.original);
+                        parsed = { ...row.original, ...result } as T;
+                      } catch (e) {
+                        console.error('parseEditItem/parseData error:', e, row.original);
+                        return;
+                      }
+                    } else {
+                      parsed = row.original as T;
                     }
-                  } else {
-                    parsed = row.original as T;
-                  }
-                  setEditingItem(parsed!);
-                }}>
-                  Modifier
-                </DropdownMenuItem>
-              )}
-              {config.actions?.delete && (
-                <DropdownMenuItem onClick={() => setDeletingItem(row.original as T)}>
-                  Supprimer
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ),
+                    setEditingItem(parsed!);
+                  }}>
+                    Modifier
+                  </DropdownMenuItem>
+                )}
+                {canDuplicate && (
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      // Remove id, createdAt, updatedAt, and append (copie) to name
+                      const original = row.original as Record<string, unknown>;
+                      const { id, createdAt, updatedAt, name, slug, ...rest } = original;
+                      let newName = typeof name === 'string' ? (name.endsWith(' (copie)') ? name : name + ' (copie)') : name;
+                      // Generate a new slug (no named groups)
+                      let newSlug = typeof slug === 'string' ? slug : '';
+                      if (newSlug.endsWith('-copie')) {
+                        // If already ends with -copie, add a number suffix
+                        const match = newSlug.match(/-copie(-([0-9]+))?$/);
+                        if (match && match[2]) {
+                          newSlug = newSlug.replace(/-copie(-[0-9]+)?$/, `-copie-${parseInt(match[2]) + 1}`);
+                        } else {
+                          newSlug = newSlug + '-2';
+                        }
+                      } else {
+                        newSlug = newSlug + '-copie';
+                      }
+                      try {
+                        await create({ ...rest, name: newName, slug: newSlug } as Partial<T>);
+                      } catch (e) {
+                        console.error('Erreur lors de la duplication:', e);
+                      }
+                    }}
+                  >
+                    Dupliquer
+                  </DropdownMenuItem>
+                )}
+                {config.actions?.delete && (
+                  <DropdownMenuItem onClick={() => setDeletingItem(row.original as T)}>
+                    Supprimer
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
         meta: {
           className: () => 'text-center',
         },
