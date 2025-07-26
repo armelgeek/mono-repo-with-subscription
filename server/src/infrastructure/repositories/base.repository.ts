@@ -19,7 +19,7 @@ export interface BaseUpdateEntity {
 }
 
 export interface PaginatedResponse<T> {
-  items: T[]
+  data: T[]
   total: number
   page: number
   limit: number
@@ -129,7 +129,7 @@ export abstract class BaseRepository<
     const totalPages = Math.ceil(total / limit)
 
     return {
-      items: items.map((item) => this.transformToEntity(item)),
+      data: items.map((item) => this.transformToEntity(item)),
       total,
       page,
       limit,

@@ -1,6 +1,5 @@
 
 import { Metadata } from 'next';
-import { cookies } from 'next/headers';
 import AdminLayoutClient from '@/shared/layout/admin/admin-layout-client';
 
 export const metadata: Metadata = {
@@ -13,11 +12,9 @@ interface AdminLayoutProps {
 }
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
   
   return (
-    <AdminLayoutClient defaultOpen={defaultOpen}>
+    <AdminLayoutClient defaultOpen={true}>
       {children}
     </AdminLayoutClient>
   );

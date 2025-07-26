@@ -14,6 +14,7 @@ type SessionType = {
     name?: string;
     email?: string;
     image?: string | null;
+    role?: string;
   };
 } | null;
 
@@ -22,12 +23,8 @@ interface AdminLayoutClientProps {
   defaultOpen?: boolean;
 }
 
-// Helper pour vérifier si l'utilisateur est admin (à adapter selon ton modèle)
 function isAdmin(session: SessionType): boolean {
-  // Ex : vérifier un champ role ou email
-  // return session?.user?.role === 'admin';
-  // Pour démo, autorise tout le monde
-  return !!session?.user;
+  return session?.user?.role === 'super_admin';
 }
 
 export default function AdminLayoutClient({ children, defaultOpen = true }: AdminLayoutClientProps) {

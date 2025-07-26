@@ -63,7 +63,7 @@ export class CategoryController implements Routes {
                   success: z.boolean(),
                   data: z
                     .object({
-                      items: z.array(this.CategorySchema),
+                      data: z.array(this.CategorySchema),
                       total: z.number(),
                       page: z.number(),
                       limit: z.number(),

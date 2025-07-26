@@ -91,16 +91,13 @@ async function createSuperAdmin(adminData, superAdminRole) {
         email: adminData.email,
         password: tempPassword,
         role: 'super_admin',
-        banned: false,
-        banReason: '',
-        banExpires: new Date(0),
         isAdmin: true,
         isTrialActive: false,
         trialStartDate: now,
         trialEndDate: now,
         stripeCustomerId: '',
         stripeSubscriptionId: '',
-        stripePriceId: '',
+        planId: '',
         stripeCurrentPeriodEnd: now
       }
     })

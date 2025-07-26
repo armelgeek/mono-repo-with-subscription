@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
     session: "/v1/users/session",
   },
   category: {
+    base: "/categories",
     list: "/categories",
     detail: (id: string) => `/categories/${id}`,
     bySlug: (slug: string) => `/categories/slug/${slug}`,

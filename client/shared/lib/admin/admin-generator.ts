@@ -97,7 +97,12 @@ export type ChildConfig = {
 };
 
 export interface AdminConfigWithServices<T extends Record<string, unknown>> extends AdminConfigWithAccessor {
-  parent: any | undefined;
+  parent?: {
+    key: string;
+    routeParam: string;
+    parentEntity?: string;
+    parentLabel?: string;
+  };
   services?: CrudService<T>;
   queryKey?: string[];
   parseEditItem?: (item: Partial<T>) => Partial<T> | T;
@@ -554,10 +559,20 @@ export function useZodValidation<T>(schema: ZodSchema<T>) {
   return { validate, safeValidate };
 }
 
+
+// Type utilitaire pour forcer la présence des propriétés indispensables
+type RequiredAdminConfig<T extends Record<string, unknown>> = {
+  description: string;
+  icon: string;
+  actions: Required<AdminConfigWithChild<T>["actions"]>;
+  services: NonNullable<AdminConfigWithChild<T>["services"]>;
+  queryKey: string[];
+} & Partial<Omit<AdminConfigWithChild<T>, 'description' | 'icon' | 'actions' | 'services' | 'queryKey' | 'accessor'>>;
+
 export function createAdminEntity<T extends Record<string, unknown>>(
   name: string,
   schema: z.ZodObject<z.ZodRawShape>,
-  config?: Partial<AdminConfigWithChild<T>>
+  config: RequiredAdminConfig<T>
 ): AdminConfigWithChild<T> {
   const baseConfig = generateAdminConfig(schema, name);
   return {
@@ -566,12 +581,12 @@ export function createAdminEntity<T extends Record<string, unknown>>(
     fields: config?.fields || baseConfig.fields,
     actions: { ...baseConfig.actions, ...config?.actions },
     ui: { ...baseConfig.ui, ...config?.ui },
-    services: config?.services,
-    queryKey: config?.queryKey || [name.toLowerCase()],
-    parent: config?.parent,
-    children: config?.children,
-    formFields: config?.formFields,
-    parseEditItem: config?.parseEditItem || ((item: Partial<T>) => {
+    services: config.services,
+    queryKey: config.queryKey,
+    parent: config.parent,
+    children: config.children,
+    formFields: config.formFields,
+    parseEditItem: config.parseEditItem || ((item: Partial<T>) => {
       const parsed: Partial<T> = { ...item };
       const dateRegex = /date|at$/i;
       const isoDateRegex = /^\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?)?/;

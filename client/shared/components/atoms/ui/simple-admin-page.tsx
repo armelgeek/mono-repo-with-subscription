@@ -354,8 +354,14 @@ export function SimpleAdminPage<T extends Record<string, unknown>>({
 
 
   const configWithBulk = config as AdminConfigWithBulkActions<T>;
-
-  const itemsTyped = items as T[];
+  // Support paginé : {data: T[], ...meta} ou array direct
+  type MaybePaginated<T> = T[] | { data: T[] };
+  let itemsTyped: T[] = [];
+  if (Array.isArray(items)) {
+    itemsTyped = items as T[];
+  } else if (items && typeof items === 'object' && Array.isArray((items as { data?: T[] }).data)) {
+    itemsTyped = (items as { data: T[] }).data;
+  }
   const selectedIds = itemsTyped
     .filter((item) => rowSelection[(item as Record<string, unknown>).id as string])
     .map((item) => String((item as Record<string, unknown>).id));

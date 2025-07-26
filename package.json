@@ -30,6 +30,7 @@
     "deploy:client": "cd client && orbiter deploy",
     "deploy:server": "cd server && bun run deploy",
     "create:superuser": "cd server && bun run create:superuser",
+    "stripe:listen": "cd server && bun run stripe:listen",
     "expo:start": "cd mobile && expo start",
     "expo:dev": "cd mobile && expo start -c",
     "expo:reset-project": "cd mobile && node ./scripts/reset-project.js",

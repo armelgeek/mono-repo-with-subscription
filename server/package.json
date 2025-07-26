@@ -35,7 +35,8 @@
     "db:migrate": "tsx ./drizzle/migrate.ts",
     "db:studio": "npx drizzle-kit studio",
     "db:push": "npx drizzle-kit push",
-    "create:superuser": "bun run ./drizzle/create-super-admin.js"
+    "create:superuser": "bun run ./drizzle/create-super-admin.js",
+    "stripe:listen": "bun run stripe listen --forward-to http://localhost:3000/api/stripe/webhook"
   },
   "simple-git-hooks": {
     "pre-commit": "bun run lint && bun run format",
