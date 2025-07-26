@@ -37,7 +37,7 @@ export class SubscriptionPlanController implements Routes {
                 schema: z.object({
                   name: z.string().min(1).describe('Nom du plan (ex: Premium, Essentiel)'),
                   description: z.string().optional().describe('Description marketing du plan'),
-                  childLimit: z.number().int().positive().optional().describe('Nombre maximum d’enfants inclus'),
+                  limit: z.number().int().positive().optional().describe('Nombre maximum d’enfants inclus'),
                   priceMonthly: z.number().nonnegative().describe('Prix réel à payer par mois (ex: 29.90)'),
                   priceYearly: z.number().nonnegative().describe('Prix réel à payer par an (ex: 299)'),
                   displayedYearly: z.number().nonnegative().describe('Prix barré affiché pour 12 mois (ex: 440)'),

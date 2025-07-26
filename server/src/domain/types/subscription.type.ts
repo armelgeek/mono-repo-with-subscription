@@ -2,7 +2,7 @@ export type SubscriptionPlan = {
   id: string | number
   title: string
   description: string
-  childLimit: number
+  limit: number
   prices: {
     monthly: number
     yearly: number

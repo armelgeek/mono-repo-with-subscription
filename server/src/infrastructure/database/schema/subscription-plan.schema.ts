@@ -4,7 +4,7 @@ export const subscriptionPlans = pgTable('subscription_plans', {
   id: text('id').primaryKey(),
   name: text('name').notNull().unique(),
   description: text('description'),
-  childLimit: numeric('child_limit', { precision: 4, scale: 0 }),
+  limit: numeric('child_limit', { precision: 4, scale: 0 }),
   priceMonthly: numeric('price_monthly', { precision: 10, scale: 2 }).notNull(),
   priceYearly: numeric('price_yearly', { precision: 10, scale: 2 }).notNull(),
   displayedYearly: numeric('displayed_yearly', { precision: 10, scale: 2 }).notNull(),
