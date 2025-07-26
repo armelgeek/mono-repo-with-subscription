@@ -4,7 +4,7 @@ import { z } from 'zod';
 export interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'file';
+  type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'file' | 'color';
   placeholder?: string;
   required?: boolean;
   validation?: z.ZodSchema;

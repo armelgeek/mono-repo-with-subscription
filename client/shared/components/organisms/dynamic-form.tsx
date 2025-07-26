@@ -40,7 +40,6 @@ function FormFieldComponent({ field, fieldProps }: { field: FormField; fieldProp
             className={error ? 'border-red-500' : ''}
           />
         );
-
       case 'select':
         return (
           <Select
@@ -59,7 +58,6 @@ function FormFieldComponent({ field, fieldProps }: { field: FormField; fieldProp
             </SelectContent>
           </Select>
         );
-
       case 'checkbox':
         return (
           <div className="flex items-center space-x-2">
@@ -73,7 +71,6 @@ function FormFieldComponent({ field, fieldProps }: { field: FormField; fieldProp
             </Label>
           </div>
         );
-
       case 'radio':
         return (
           <RadioGroup
@@ -90,7 +87,6 @@ function FormFieldComponent({ field, fieldProps }: { field: FormField; fieldProp
             ))}
           </RadioGroup>
         );
-
       case 'file':
         return (
           <Input
@@ -105,7 +101,17 @@ function FormFieldComponent({ field, fieldProps }: { field: FormField; fieldProp
             className={error ? 'border-red-500' : ''}
           />
         );
-
+      case 'color':
+        return (
+          <input
+            id={field.name}
+            type="color"
+            value={(value as string) || '#000000'}
+            onChange={(e) => onChange(e.target.value)}
+            className={error ? 'border-red-500 h-10 w-16 p-0' : 'h-10 w-16 p-0'}
+            style={{ minWidth: 48, minHeight: 32 }}
+          />
+        );
       default:
         return (
           <Input

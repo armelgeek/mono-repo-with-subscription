@@ -8,7 +8,7 @@ import { Icons } from '@/shared/components/atoms/ui/icons';
 export interface FieldConfig {
   key: string;
   label: string;
-  type: 'text' | 'number' | 'boolean' | 'select' | 'textarea' | 'date' | 'email' | 'url' | 'rich-text' | 'image' | 'file' | 'relation' | 'list' | 'array' | 'time';
+  type: 'text' | 'number' | 'boolean' | 'select' | 'textarea' | 'date' | 'email' | 'url' | 'rich-text' | 'image' | 'file' | 'relation' | 'list' | 'array' | 'time'| 'color';
   required?: boolean;
   options?: string[] | { value: string; label: string }[];
   placeholder?: string;
@@ -234,6 +234,9 @@ export const createField = {
 
   date: (metadata?: ZodMetadata) =>
     withMeta(z.date(), { type: 'date', ...metadata }),
+
+  color: (metadata?: ZodMetadata) =>
+    withMeta(z.string(), { type: 'color', ...metadata }),
 
   select: (options: string[] | { value: string; label: string }[], metadata?: ZodMetadata) =>
     withMeta(z.string(), { type: 'select', options, ...metadata }),
@@ -567,6 +570,8 @@ type RequiredAdminConfig<T extends Record<string, unknown>> = {
   actions: Required<AdminConfigWithChild<T>["actions"]>;
   services: NonNullable<AdminConfigWithChild<T>["services"]>;
   queryKey: string[];
+  formFields: string[];
+  ui: NonNullable<AdminConfigWithChild<T>["ui"]>;
 } & Partial<Omit<AdminConfigWithChild<T>, 'description' | 'icon' | 'actions' | 'services' | 'queryKey' | 'accessor'>>;
 
 export function createAdminEntity<T extends Record<string, unknown>>(

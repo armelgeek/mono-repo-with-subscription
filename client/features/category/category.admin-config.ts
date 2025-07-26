@@ -15,6 +15,17 @@ export const CategoryAdminConfig = createAdminEntity('Catégorie', CategorySchem
   },
   services: categoryService,
   queryKey: ['categories'],
+  formFields: ['name', 'description', 'slug', 'color'],
+  ui: {
+    table: {
+      defaultSort: 'createdAt',
+      pageSize: 20,
+    },
+    form: {
+      layout: 'simple',
+    },
+    toolbarActions: undefined
+  }
 });
 
 registerAdminEntity('category', CategoryAdminConfig, '/admin/category', '📂');

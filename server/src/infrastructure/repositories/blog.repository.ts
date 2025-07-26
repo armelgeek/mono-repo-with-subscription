@@ -77,7 +77,7 @@ export class BlogRepositoryImpl extends BaseRepository<Blog, BlogCreate, BlogUpd
   async getAll(page = 1, limit = 10): Promise<BlogListResponse> {
     const result = await this.findAll(page, limit)
     return {
-      items: result.items,
+      data: result.data,
       total: result.total,
       page: result.page,
       limit: result.limit,

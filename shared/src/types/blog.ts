@@ -104,7 +104,7 @@ export interface BlogUpdate {
 }
 
 export interface BlogListResponse {
-  items: Blog[];
+  data: Blog[];
   total: number;
   page: number;
   limit: number;
