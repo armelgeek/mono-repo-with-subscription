@@ -53,7 +53,7 @@ const AppClientMenu = () => {
           <NavLink
             key={item.url}
             href={item.url}
-            className="font-semibold py-2 px-3 rounded transition-colors duration-150 hover:text-primary hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="font-semibold py-2 px-3 transition-colors duration-150 hover:text-primary hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             active={item.url === "/" ? pathname === "/" : pathname.startsWith(item.url)}
           >
             {item.title}
@@ -64,7 +64,7 @@ const AppClientMenu = () => {
       <div className="flex items-center gap-2 min-w-[120px] justify-end">
         <div className="hidden md:block w-36">{ctaButton()}</div>
         <button
-          className="md:hidden inline-flex items-center justify-center p-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="md:hidden inline-flex items-center justify-center p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
           onClick={() => setMobileOpen((v) => !v)}
         >
@@ -96,7 +96,7 @@ const AppClientMenu = () => {
             <div className="flex items-center justify-between mb-4">
               <Logo size="sm" variant="compact" />
               <button
-                className="p-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="p-2  focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 aria-label="Fermer le menu"
                 onClick={() => setMobileOpen(false)}
               >
@@ -110,7 +110,7 @@ const AppClientMenu = () => {
                 <div key={item.url} onClick={() => setMobileOpen(false)}>
                   <NavLink
                     href={item.url}
-                    className="font-semibold py-2 px-3 rounded transition-colors duration-150 hover:text-primary hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    className="font-semibold py-2 px-3  transition-colors duration-150 hover:text-primary hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     active={item.url === "/" ? pathname === "/" : pathname.startsWith(item.url)}
                   >
                     {item.title}

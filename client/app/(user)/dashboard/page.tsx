@@ -3,22 +3,17 @@
 import { useAuth } from "@/shared/providers/auth-provider";
 import { Button } from "@/shared/components/atoms/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/atoms/ui/card";
-import { 
-  Calendar, 
-  Clock, 
-  CreditCard, 
-  TrendingUp, 
-  FileText,
-  Bell,
-  Settings
-} from "lucide-react";
+import { Calendar, Clock, CreditCard, TrendingUp, FileText, Bell, Settings } from "lucide-react";
+
 import { 
   useDashboardStats, 
   useRecentActivity, 
   useUpcomingEvents,
   useUnreadNotificationsCount 
 } from "@/features/dashboard/hooks/use-dashboard";
+import { ActivityTypeDescriptions } from '@/shared/constants/activity-type-descriptions';
 
+ 
 export default function UserDashboardPage() {
   const { isLoading: authLoading } = useAuth();
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
@@ -129,6 +124,7 @@ export default function UserDashboardPage() {
 
   return (
     <div className="space-y-8">
+
       {/* En-tête avec salutation */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -149,6 +145,7 @@ export default function UserDashboardPage() {
           )}
         </Button>
       </div>
+
 
       {/* Statistiques */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
@@ -201,13 +198,14 @@ export default function UserDashboardPage() {
               <>
                 {recentActivities.map((activity, index) => {
                   const ActivityIcon = getActivityIcon(activity.type);
+                  const activityLabel = ActivityTypeDescriptions[activity.type] || activity.title;
                   return (
                     <div key={index} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                       <div className="p-2 bg-gray-100 rounded-lg">
                         <ActivityIcon className="h-4 w-4 text-gray-600" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{activity.title}</p>
+                        <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{activityLabel}</p>
                         <p className="text-sm text-gray-600 line-clamp-2">{activity.description}</p>
                         <p className="text-xs text-gray-500 mt-1">{formatActivityTime(activity.date)}</p>
                       </div>

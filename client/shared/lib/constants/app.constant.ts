@@ -57,7 +57,7 @@ export const CLIENT_MENU_ITEMS: NavItem[] = [
   {
     title: "Catégories",
     url: "/category",
-  },
+  }
 ];
 
 export function getSidebarNavItems(): NavItem[] {

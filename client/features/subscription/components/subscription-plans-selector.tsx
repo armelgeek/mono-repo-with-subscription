@@ -1,6 +1,7 @@
 "use client";
-import { useState } from 'react';
-import { useEffect } from 'react';
+
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 import { useSubscriptionPlans } from '../hooks/use-subscription-plan';
@@ -17,6 +18,7 @@ type CurrentSubscription = {
   trialDaysLeft?: number | null;
   trialEndDate?: string | null;
   maxLimit?: number | null;
+  isTrial?: boolean;
   // Ajoute d’autres propriétés connues ici si besoin
 };
 
@@ -32,10 +34,10 @@ export function SubscriptionPlansSelector({ onSuccess }: { onSuccess?: () => voi
   const hasActiveSubscription = current && current.planId && !current.isExpired && !current.isCanceled;
   const [interval, setInterval] = useState<'month' | 'year'>('month');
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   const create = useCreateSubscription();
   const change = useChangeSubscriptionPlan();
 
-  // Redirection automatique vers Stripe si paymentUrl est présent
   useEffect(() => {
     const paymentUrl = (create.data?.data as { paymentUrl?: string } | undefined)?.paymentUrl;
     if (paymentUrl) {
@@ -51,70 +53,82 @@ export function SubscriptionPlansSelector({ onSuccess }: { onSuccess?: () => voi
     if (!selectedPlan) return;
     if (hasActiveSubscription && current?.planId === selectedPlan) return;
     if (hasActiveSubscription) {
-      change.mutate({ planId: selectedPlan, interval }, { onSuccess });
+      change.mutate(
+        { planId: selectedPlan, interval },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['current-subscription'] });
+            onSuccess?.();
+          },
+        }
+      );
     } else {
-      create.mutate({ planId: selectedPlan, interval, successUrl: 'http://localhost:5173/payment-success', cancelUrl: 'http://localhost:5173/payment-cancel' }, { onSuccess });
+      create.mutate(
+        { planId: selectedPlan, interval, successUrl: 'http://localhost:5173/payment-success', cancelUrl: 'http://localhost:5173/payment-cancel' },
+        { onSuccess }
+      );
     }
   };
-  const currentPlan = hasActiveSubscription
-    ? plans?.find(plan => plan.id === current?.planId)
-    : undefined;
-
-    console.log('currentPlan', current);
 
   return (
     <div>
-      {hasActiveSubscription && currentPlan && (
-        <div className="mb-6 p-4 border border-green-400 rounded bg-green-50">
-          <div className="font-bold text-green-700 text-lg">Votre abonnement actuel</div>
-          <div className="mt-1 text-base">{currentPlan.name}</div>
-          <div className="text-sm text-gray-600">{currentPlan.description}</div>
-          <div className="mt-2 text-xl">
-            {current.interval === 'year'
-              ? `${currentPlan.priceYearly} ${currentPlan.currency} / an`
-              : `${currentPlan.priceMonthly} ${currentPlan.currency} / mois`}
-          </div>
-          {current.activeUntil && (
-            <div className="text-xs text-gray-500 mt-1">
-              Actif jusqu’au : {new Date(current.activeUntil).toLocaleDateString()}
-            </div>
-          )}
-        </div>
-      )}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-6">
         <button
-          className={interval === 'month' ? 'font-bold underline' : ''}
+          className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${interval === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
           onClick={() => setInterval('month')}
         >
           Mensuel
         </button>
         <button
-          className={interval === 'year' ? 'font-bold underline' : ''}
+          className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${interval === 'year' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
           onClick={() => setInterval('year')}
         >
           Annuel
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {plans.map(plan => (
-          <div
-            key={plan.id}
-            className={`border rounded p-4 cursor-pointer ${selectedPlan === plan.id ? 'border-blue-500' : 'border-gray-200'}`}
-          onClick={() => plan.id && handleSelect(plan.id)}
-          >
-            <div className="text-lg font-semibold">{plan.name}</div>
-            <div className="text-sm text-gray-500">{plan.description}</div>
-            <div className="mt-2 text-xl">
-              {interval === 'month' ? plan.priceMonthly : plan.priceYearly} {plan.currency}
+        {plans.map(plan => {
+          const isCurrent = hasActiveSubscription && current?.planId === plan.id;
+          const isSelected = selectedPlan === plan.id;
+          return (
+            <div
+              key={plan.id}
+              className={`relative group border rounded-2xl p-6 cursor-pointer bg-gradient-to-br from-blue-50 via-white to-blue-100 shadow-lg transition-all duration-200
+                ${isSelected ? 'border-blue-700 ring-2 ring-blue-200 scale-[1.03]' : 'border-gray-200 hover:border-blue-400 hover:scale-[1.01]'}
+                ${isCurrent ? 'opacity-95' : ''}
+                hover:shadow-xl
+              `}
+              style={{ minHeight: 180 }}
+              onClick={() => plan.id && handleSelect(plan.id)}
+            >
+              <div className="absolute top-4 right-4 z-10">
+                <span className={`px-3 py-1 rounded-full text-base font-bold shadow-sm border-2
+                  ${isSelected ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-blue-700 border-blue-200'}
+                `}>
+                  {interval === 'month' ? plan.priceMonthly : plan.priceYearly} {plan.currency}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-2xl select-none">💎</span>
+                <span className="text-lg font-bold text-gray-900 tracking-tight">{plan.name}</span>
+                {isCurrent && (
+                  <span className="ml-2 px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700 border border-green-200">Actuel</span>
+                )}
+                {isSelected && !isCurrent && (
+                  <span className="ml-2 px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700 border border-blue-200 animate-pulse">Sélectionné</span>
+                )}
+              </div>
+              <div className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5em]">{plan.description}</div>
+              <div className="flex items-end gap-2 mt-6">
+                <span className="text-xs text-gray-500">{interval === 'month' ? 'Facturation mensuelle' : 'Facturation annuelle'}</span>
+                <span className="ml-auto text-xs text-gray-400 group-hover:text-blue-500 transition">Cliquez pour choisir</span>
+              </div>
             </div>
-            {hasActiveSubscription && current?.planId === plan.id && (
-              <div className="text-green-600 mt-2">Abonnement actuel</div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
       <button
-        className="mt-6 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+        className="mt-6 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-semibold shadow-sm hover:bg-blue-700 transition disabled:opacity-50"
         disabled={Boolean(
           !selectedPlan || create.isPending || change.isPending || (hasActiveSubscription && current?.planId === selectedPlan)
         )}

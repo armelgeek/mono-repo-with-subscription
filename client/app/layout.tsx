@@ -1,8 +1,10 @@
 import React from 'react';
 import { Toaster } from '@/shared/components/atoms/ui/sonner';
+
 import { Provider } from '@/shared/providers';
 import NextTopLoader from 'nextjs-toploader';
-import {  Livvic } from 'next/font/google';
+import { Livvic } from 'next/font/google';
+import { TrialBanner } from '@/shared/components/trial-banner';
 import '@/shared/styles/globals.css';
 
 const spaceGrotesk = Livvic({
@@ -24,7 +26,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       <body className={`${spaceGrotesk.variable}  font-space-grotesk`}>
         <NextTopLoader showSpinner={true} />
         <Provider>
-              {children}
+          <TrialBanner />
+          {children}
         </Provider>
         <Toaster richColors />
       </body>

@@ -7,6 +7,7 @@ import {
   SubscriptionPlanController,
   UserController
 } from './infrastructure/controllers'
+import { ActivityLogController } from './infrastructure/controllers/activity-log.controller'
 import { CategoryController } from './infrastructure/controllers/category.controller'
 import '@/infrastructure/schedulers'
 const app = new App([
@@ -14,6 +15,7 @@ const app = new App([
   new PermissionController(),
   new BlogController(),
   new CategoryController(),
+  new ActivityLogController(),
   new SubscriptionController(),
   new SubscriptionPlanController()
 ]).getApp()

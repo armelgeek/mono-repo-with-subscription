@@ -34,6 +34,7 @@ interface NavigationItem {
     { icon: User, label: "Profil", href: "/dashboard/profile" },
     { icon: FileText, label: "Documents", href: "/dashboard/documents" },
     { icon: Calendar, label: "Planning", href: "/dashboard/calendar" },
+    { icon: CreditCard, label: "Abonnement", href: "/dashboard/subscription" },
     { icon: CreditCard, label: "Facturation", href: "/dashboard/billing" },
     { icon: Clock, label: "Historique", href: "/dashboard/history" },
     { icon: Settings, label: "Paramètres", href: "/dashboard/settings" },
@@ -241,7 +242,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
         {/* Contenu principal */}
         <main className="flex-1 lg:ml-6">
-          <div className="lg:px-6 py-4 sm:py-6 lg:py-8">
+          <div className="lg:px-6">
             {children}
           </div>
         </main>
