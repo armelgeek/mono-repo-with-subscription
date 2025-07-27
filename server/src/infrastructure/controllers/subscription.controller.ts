@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { CancelSubscriptionUseCase } from '@/application/use-cases/subscription/cancel-subscription.use-case'
 import { ChangeSubscriptionPlanUseCase } from '@/application/use-cases/subscription/change-subscription.use-case'
@@ -9,7 +10,6 @@ import { stripe } from '../config/stripe.config'
 
 export class SubscriptionController implements Routes {
   public controller: OpenAPIHono
-  private childrenRepository: any
 
   constructor() {
     this.controller = new OpenAPIHono()
@@ -422,7 +422,8 @@ export class SubscriptionController implements Routes {
       }),
       async (ctx: any) => {
         const sig = ctx.req.header('stripe-signature')
-        const rawBody = await ctx.req.raw.text()
+        // Stripe attend un Buffer, pas un string !
+        const rawBody = Buffer.from(await ctx.req.raw.arrayBuffer())
         try {
           const event = await stripe.webhooks.constructEventAsync(rawBody, sig!, Bun.env.STRIPE_WEBHOOK_SECRET!)
 
@@ -581,8 +582,9 @@ export class SubscriptionController implements Routes {
                 schema: z.object({
                   success: z.boolean(),
                   data: z.object({
+                    planId: z.string().optional(),
                     planName: z.string(),
-                    maxChildren: z.number(),
+                    maxLimit: z.number(),
                     activeUntil: z.string().nullable(),
                     isTrial: z.boolean(),
                     currentChildrenCount: z.number(),
@@ -608,7 +610,7 @@ export class SubscriptionController implements Routes {
             return c.json({ success: false, error: 'No subscription found' }, 404)
           }
           const planName = sub.plan?.title
-          const maxChildren = sub.plan?.maxChildren || 1
+          const maxLimit = sub.plan?.maxLimit || 1
           const isTrial = sub.isTrialActive || false
 
           let activeUntil = null
@@ -646,13 +648,13 @@ export class SubscriptionController implements Routes {
           } else {
             isExpired = true
           }
-          const currentChildrenCount = await this.childrenRepository.countByParentId(user.id)
 
           return c.json({
             success: true,
             data: {
+              planId: sub.plan?.id || undefined,
               planName,
-              maxChildren,
+              maxLimit,
               interval: sub.plan?.interval || null,
               activeUntil,
               isTrial,
@@ -660,8 +662,7 @@ export class SubscriptionController implements Routes {
               trialDaysLeft,
               isExpired,
               isCanceled: sub.isCanceled,
-              accessEndsAt: sub.accessEndsAt,
-              currentChildrenCount: currentChildrenCount || 0
+              accessEndsAt: sub.accessEndsAt
             }
           })
         } catch (error: any) {

@@ -103,10 +103,19 @@ export class CreateSubscriptionUseCase extends IUseCase<CreateSubscriptionParams
         cancel_url: cancelUrl
       })
 
-      return { success: true, sessionId: session.id, paymentUrl: session.url ?? undefined }
-    } catch (error) {
+      let paymentUrl: string | undefined = undefined
+      if (session.url && /^https?:\/\//.test(session.url)) {
+        paymentUrl = session.url
+      }
+
+      return { success: true, sessionId: session.id, paymentUrl }
+    } catch (error: any) {
+      if (error && error.code === 'url_invalid') {
+        console.error('[Stripe Checkout Error] URL invalide:', error.message, error)
+        return { success: false, error: 'Stripe a retourné une URL de paiement invalide.' }
+      }
       console.error('[Stripe Checkout Error]', error)
-      return { success: false, error: 'Error occured' }
+      return { success: false, error: error?.message || 'Error occured' }
     }
   }
   log(): ActivityType {

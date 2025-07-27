@@ -17,8 +17,9 @@ export class GetSubscriptionStatusUseCase extends IUseCase<{ userId: string }, a
           stripeSubscriptionId: users.stripeSubscriptionId,
           stripeCurrentPeriodEnd: users.stripeCurrentPeriodEnd,
           plan: {
+            id: subscriptionPlans.id,
             title: subscriptionPlans.name,
-            maxChildren: subscriptionPlans.limit,
+            maxLimit: subscriptionPlans.limit,
             description: subscriptionPlans.description
           }
         })
