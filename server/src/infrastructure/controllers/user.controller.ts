@@ -309,7 +309,7 @@ export class UserController implements Routes {
                 schema: z.object({
                   success: z.boolean(),
                   data: z.object({
-                    users: z.array(
+                    data: z.array(
                       z.object({
                         id: z.string(),
                         name: z.string(),
@@ -408,7 +408,7 @@ export class UserController implements Routes {
           return c.json({
             success: true,
             data: {
-              users: usersWithRoles,
+              data: usersWithRoles,
               total: result.total,
               page: result.page,
               limit: result.limit

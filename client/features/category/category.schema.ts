@@ -6,7 +6,7 @@ export const CategorySchema = z.object({
   name: createField.string({ label: 'Nom', display: { showInForm: true } }),
   slug: createField.string({ label: 'Slug', display: { showInForm: true } }),
   color: createField.string({ label: 'Couleur', type: 'color', display: { showInForm: true } }),
-  description: createField.textarea({ label: 'Description', display: { showInForm: true } })
-
+  description: createField.textarea({ label: 'Description', display: { showInForm: true } }),
+  deletedAt: createField.string({ label: 'Statut', display: { showInForm: false, showInTable: true, format: (v) => v ? 'Supprimée' : 'Active' } }).optional(),
 });
 export type CategoryFormData = z.infer<typeof CategorySchema>;

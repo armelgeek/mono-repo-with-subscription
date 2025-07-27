@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { Button } from '@/shared/components/atoms/ui/button';
-import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/atoms/ui/dialog';
+// ...existing code...
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/components/atoms/ui/alert-dialog';
 import { DataTable } from '@/shared/components/molecules/datatable/data-table';
 import { useTableParams } from '@/shared/hooks/use-table-params';
@@ -22,6 +22,7 @@ import {
   SheetTrigger,
 } from '@/shared/components/atoms/ui/sheet';
 
+
 interface AdminPageProps<T extends Record<string, unknown>> {
   config: AdminConfig;
   schema: z.ZodSchema<T>;
@@ -29,6 +30,8 @@ interface AdminPageProps<T extends Record<string, unknown>> {
   createItem: (data: T) => Promise<T>;
   updateItem: (id: string, data: Partial<T>) => Promise<T>;
   deleteItem: (id: string) => Promise<void>;
+  softDeleteItem?: (id: string) => Promise<void>;
+  restoreItem?: (id: string) => Promise<void>;
   queryKey: string[];
   className?: string;
 }
@@ -40,6 +43,8 @@ export function AdminPage<T extends Record<string, unknown>>({
   createItem,
   updateItem,
   deleteItem,
+  softDeleteItem,
+  restoreItem,
   queryKey,
   className,
 }: AdminPageProps<T>) {
@@ -98,12 +103,39 @@ export function AdminPage<T extends Record<string, unknown>>({
     },
   });
 
+
+  // Soft delete mutation
+  const softDeleteMutation = useMutation({
+    mutationFn: softDeleteItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      setDeletingItem(null);
+      toast.success(`${config.title} archivé avec succès`);
+    },
+    onError: (error) => {
+      toast.error(`Erreur lors de l'archivage : ${error.message}`);
+    },
+  });
+
+  // Restore mutation
+  const restoreMutation = useMutation({
+    mutationFn: restoreItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      toast.success(`${config.title} restauré avec succès`);
+    },
+    onError: (error) => {
+      toast.error(`Erreur lors de la restauration : ${error.message}`);
+    },
+  });
+
+  // Hard delete fallback
   const deleteMutation = useMutation({
     mutationFn: deleteItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
       setDeletingItem(null);
-      toast.success(`${config.title} supprimé avec succès`);
+      toast.success(`${config.title} supprimé définitivement`);
     },
     onError: (error) => {
       toast.error(`Erreur lors de la suppression : ${error.message}`);
@@ -130,12 +162,52 @@ export function AdminPage<T extends Record<string, unknown>>({
     setDeletingItem(item);
   };
 
+
   const confirmDelete = async () => {
     if (!deletingItem?.id) return;
-    await deleteMutation.mutateAsync(deletingItem.id as string);
+    if (softDeleteItem) {
+      await softDeleteMutation.mutateAsync(deletingItem.id as string);
+    } else {
+      await deleteMutation.mutateAsync(deletingItem.id as string);
+    }
   };
 
-  const columns = generateTableColumns(config, handleEdit, handleDelete);
+  // Ajout colonne statut et action restaurer si soft delete activé
+  let columns = generateTableColumns(config, handleEdit, handleDelete);
+  if (softDeleteItem && restoreItem) {
+    columns = [
+      ...columns,
+      {
+        accessorKey: 'deletedAt',
+        header: 'Statut',
+        cell: ({ row }: { row: { original: T } }) => {
+          const deletedAt = row.original.deletedAt as string | null | undefined;
+          return deletedAt ? (
+            <span className="text-xs text-red-500 font-semibold">Archivé</span>
+          ) : (
+            <span className="text-xs text-green-600 font-semibold">Actif</span>
+          );
+        },
+      },
+      {
+        accessorKey: 'restore',
+        header: '',
+        cell: ({ row }: { row: { original: T } }) => {
+          const deletedAt = row.original.deletedAt as string | null | undefined;
+          return deletedAt ? (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => restoreMutation.mutateAsync(row.original.id as string)}
+              disabled={restoreMutation.isPending}
+            >
+              Restaurer
+            </Button>
+          ) : null;
+        },
+      },
+    ];
+  }
 
   return (
     <div className={className}>
@@ -170,7 +242,7 @@ export function AdminPage<T extends Record<string, unknown>>({
                 <DynamicForm
                   config={config}
                   schema={schema}
-                  onSubmit={(data: Record<string, unknown>) => handleCreate(data as T)}
+                  onCreate={(data: Record<string, unknown>) => handleCreate(data as T)}
                   isSubmitting={createMutation.isPending}
                 />
               </div>
@@ -211,7 +283,7 @@ export function AdminPage<T extends Record<string, unknown>>({
                 config={config}
                 schema={schema}
                 initialData={editingItem}
-                onSubmit={(data: Record<string, unknown>) => handleUpdate(data as T)}
+                onUpdate={(data: Record<string, unknown>) => handleUpdate(data as T)}
                 isSubmitting={updateMutation.isPending}
               />
             </div>
@@ -233,7 +305,7 @@ export function AdminPage<T extends Record<string, unknown>>({
               <AlertDialogCancel>Annuler</AlertDialogCancel>
               <AlertDialogAction
                 onClick={confirmDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className="bg-destructive rounded-full text-destructive-foreground hover:bg-destructive/90"
               >
                 Supprimer
               </AlertDialogAction>

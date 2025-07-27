@@ -19,7 +19,7 @@ export default function Home() {
             <span className="block text-primary">ultra-simplifié</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Boiler est une plateforme d&apos;administration moderne qui permet de gérer facilement vos contenus, 
+            Boiler est une plateforme d&apos;administration moderne qui permet de gérer facilement vos contenus,
             utilisateurs et paramètres avec des interfaces CRUD générées automatiquement.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -49,7 +49,7 @@ export default function Home() {
               Une solution complète pour simplifier la gestion de vos projets
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center p-6 rounded-lg border hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -60,7 +60,7 @@ export default function Home() {
                 Interfaces générées automatiquement pour une productivité maximale
               </p>
             </div>
-            
+
             <div className="text-center p-6 rounded-lg border hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-8 h-8 text-primary" />
@@ -70,7 +70,7 @@ export default function Home() {
                 Authentification robuste et contrôle d&apos;accès par rôles
               </p>
             </div>
-            
+
             <div className="text-center p-6 rounded-lg border hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-primary" />
@@ -83,7 +83,13 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      <main className="max-w-2xl mx-auto py-12 px-4">
+        <h1 className="text-3xl font-bold mb-6">Bienvenue sur la plateforme</h1>
+        <p className="mb-4">Découvrez nos offres d’abonnement adaptées à vos besoins.</p>
+        <Link href="/subscription-plans" className="inline-block px-6 py-3 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 transition">
+          Voir les abonnements
+        </Link>
+      </main>
       {/* Stats Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">

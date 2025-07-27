@@ -12,12 +12,12 @@ export const API_ENDPOINTS = {
     delete: (id: string) => `/blogs/${id}`,
   },
   user: {
-    list: "/users",
-    detail: (id: string) => `/users/${id}`,
-    byEmail: (email: string) => `/users/email/${email}`,
-    update: (id: string) => `/users/${id}`,
-    delete: (id: string) => `/users/${id}`,
-    session: "/v1/users/session",
+    list: "/v1/admin/users",
+    detail: (id: string) => `v1/admin/users/${id}`,
+    byEmail: (email: string) => `v1/admin/users/email/${email}`,
+    update: (id: string) => `v1/admin/users/${id}`,
+    delete: (id: string) => `v1/admin/users/${id}`,
+    session: "v1/users/session",
   },
   category: {
     base: "/categories",
@@ -34,5 +34,20 @@ export const API_ENDPOINTS = {
     activity: "/dashboard/activity",
     events: "/dashboard/events",
     notifications: "/dashboard/notifications",
+  },
+  subscription: {
+    invoices: '/v1/subscription/invoices',
+    paymentMethod: '/v1/subscription/payment-method',
+    create: '/v1/subscription/create',
+    status: '/v1/subscription/status',
+    paymentMethodUpdate: '/v1/subscription/payment-method/update',
+    change: '/v1/subscription/change',
+    cancel: '/v1/subscription/cancel',
+    current: '/v1/subscription/current',
+    // Subscription plans (admin)
+    plans: '/v1/admin/subscription-plans',
+    plan: (id: string) => `/v1/admin/subscription-plans/${id}`,
+    // Subscription plans (public)
+    publicPlans: '/v1/subscription-plans',
   }
 };

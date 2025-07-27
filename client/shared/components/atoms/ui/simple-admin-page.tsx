@@ -260,8 +260,9 @@ export function SimpleAdminPage<T extends Record<string, unknown>>({
         accessorKey: '__actions__',
         header: 'Actions',
         cell: ({ row }: { row: Row<T> }) => {
-          // Access to create mutation if available
           const canDuplicate = !!config.actions?.create && typeof create === 'function';
+          const isCategory = config.queryKey && config.queryKey[0] === 'categories';
+          const deletedAt = (row.original as any)?.deletedAt;
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -270,7 +271,20 @@ export function SimpleAdminPage<T extends Record<string, unknown>>({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {config.actions?.update && (
+                {isCategory && deletedAt && (
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      try {
+                        await (config.services as any).restore?.((row.original as any).id)
+                      } catch (e) {
+                        console.error('Erreur lors de la restauration:', e)
+                      }
+                    }}
+                  >
+                    Restaurer
+                  </DropdownMenuItem>
+                )}
+                {config.actions?.update && !deletedAt && (
                   <DropdownMenuItem onClick={() => {
                     let parsed: T | undefined;
                     const configTyped = config as AdminConfigWithLegacyParse<T>;
@@ -291,17 +305,14 @@ export function SimpleAdminPage<T extends Record<string, unknown>>({
                     Modifier
                   </DropdownMenuItem>
                 )}
-                {canDuplicate && (
+                {canDuplicate && !deletedAt && (
                   <DropdownMenuItem
                     onClick={async () => {
-                      // Remove id, createdAt, updatedAt, and append (copie) to name
                       const original = row.original as Record<string, unknown>;
-                      const { id, createdAt, updatedAt, name, slug, ...rest } = original;
-                      let newName = typeof name === 'string' ? (name.endsWith(' (copie)') ? name : name + ' (copie)') : name;
-                      // Generate a new slug (no named groups)
+                      const { name, slug, ...rest } = original;
+                      const newName = typeof name === 'string' ? (name.endsWith(' (copie)') ? name : name + ' (copie)') : name;
                       let newSlug = typeof slug === 'string' ? slug : '';
                       if (newSlug.endsWith('-copie')) {
-                        // If already ends with -copie, add a number suffix
                         const match = newSlug.match(/-copie(-([0-9]+))?$/);
                         if (match && match[2]) {
                           newSlug = newSlug.replace(/-copie(-[0-9]+)?$/, `-copie-${parseInt(match[2]) + 1}`);
@@ -312,7 +323,7 @@ export function SimpleAdminPage<T extends Record<string, unknown>>({
                         newSlug = newSlug + '-copie';
                       }
                       try {
-                        await create({ ...rest, name: newName, slug: newSlug } as Partial<T>);
+                        await create({ ...rest, name: newName, slug: newSlug } as unknown as T);
                       } catch (e) {
                         console.error('Erreur lors de la duplication:', e);
                       }
@@ -321,7 +332,7 @@ export function SimpleAdminPage<T extends Record<string, unknown>>({
                     Dupliquer
                   </DropdownMenuItem>
                 )}
-                {config.actions?.delete && (
+                {config.actions?.delete && !deletedAt && (
                   <DropdownMenuItem onClick={() => setDeletingItem(row.original as T)}>
                     Supprimer
                   </DropdownMenuItem>

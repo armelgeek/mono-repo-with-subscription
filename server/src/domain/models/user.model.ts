@@ -16,7 +16,12 @@ export const User = z.object({
   trialEndDate: z.date().optional(),
   stripeCustomerId: z.string().optional(),
   stripeSubscriptionId: z.string().optional(),
-  stripePriceId: z.string().optional(),
+  planId: z.string().optional(),
+  banned: z.boolean().optional(),
+  banReason: z.string().optional(),
+  banExpires: z.date().optional(),
+  impersonatedBy: z.string().optional(),
+  role: z.string().optional(),
   stripeCurrentPeriodEnd: z.date().optional(),
   createdAt: z.date(),
   updatedAt: z.date()

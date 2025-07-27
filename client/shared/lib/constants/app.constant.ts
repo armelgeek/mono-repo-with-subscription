@@ -47,6 +47,10 @@ export const CLIENT_MENU_ITEMS: NavItem[] = [
     url: "/",
   },
   {
+    title: "Abonnements",
+    url: "/subscription-plans",
+  },
+  {
     title: "Blog",
     url: "/blog",
   },

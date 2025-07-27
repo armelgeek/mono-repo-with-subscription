@@ -11,6 +11,9 @@ export const users = pgTable('users', {
   lastLoginAt: timestamp('last_login_at'),
   emailVerified: boolean('email_verified').notNull(),
   role: text('role').notNull().default('user'),
+  banned: boolean('banned'),
+  banReason: text('ban_reason'),
+  banExpires: timestamp('ban_expires'),
   image: text('image'),
   isAdmin: boolean('is_admin').notNull().default(false),
   isTrialActive: boolean('is_trial_active').notNull().default(false),
@@ -23,7 +26,8 @@ export const users = pgTable('users', {
   planId: text('plan_id').references(() => subscriptionPlans.id),
   stripeCurrentPeriodEnd: timestamp('stripe_current_period_end'),
   createdAt: timestamp('created_at').notNull(),
-  updatedAt: timestamp('updated_at').notNull()
+  updatedAt: timestamp('updated_at').notNull(),
+  impersonatedBy: text('impersonated_by')
 })
 
 export const sessions = pgTable('sessions', {
@@ -36,7 +40,8 @@ export const sessions = pgTable('sessions', {
   userAgent: text('user_agent'),
   userId: text('user_id')
     .notNull()
-    .references(() => users.id)
+    .references(() => users.id),
+  impersonatedBy: text('impersonated_by')
 })
 
 export const accounts = pgTable('accounts', {

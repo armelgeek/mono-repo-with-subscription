@@ -8,7 +8,8 @@ export const categories = pgTable('categories', {
   description: text('description'),
   color: varchar('color', { length: 7 }),
   createdAt: timestamp('created_at').default(sql`now()`),
-  updatedAt: timestamp('updated_at').default(sql`now()`)
+  updatedAt: timestamp('updated_at').default(sql`now()`),
+  deletedAt: timestamp('deleted_at'),
 })
 
 export const blogCategories = pgTable('blog_categories', {

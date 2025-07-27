@@ -1,6 +1,7 @@
 import { betterAuth, type User } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { emailOTP, openAPI } from 'better-auth/plugins'
+import { emailOTP, openAPI,admin } from 'better-auth/plugins'
+
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { db } from '../database/db'
@@ -26,7 +27,8 @@ export const auth = betterAuth({
           ...template
         })
       }
-    })
+    }),
+    admin()
   ],
   database: drizzleAdapter(db, {
     provider: 'pg'

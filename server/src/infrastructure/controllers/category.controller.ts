@@ -80,8 +80,13 @@ export class CategoryController implements Routes {
       async (c: any) => {
         const page = Number(c.req.query('page') ?? '1')
         const limit = Number(c.req.query('limit') ?? '10')
-        const result = await this.getAllCategories.execute(page, limit)
-        return c.json(result)
+        // Utilise findAllActive pour ne retourner que les catégories non supprimées
+        try {
+          const data = await this.categoryRepo.findAllActive(page, limit)
+          return c.json({ success: true, data })
+        } catch (error: any) {
+          return c.json({ success: false, error: error.message })
+        }
       }
     )
 
@@ -235,20 +240,21 @@ export class CategoryController implements Routes {
       }
     )
 
+    // Soft delete (suppression douce)
     this.controller.openapi(
       createRoute({
         method: 'delete',
         path: '/categories/:id',
         tags: ['Categories'],
-        summary: 'Delete a category',
-        description: 'Supprime une catégorie',
-        operationId: 'deleteCategory',
+        summary: 'Soft delete a category',
+        description: 'Effectue une suppression douce (soft delete) de la catégorie',
+        operationId: 'softDeleteCategory',
         request: {
           params: z.object({ id: z.string() })
         },
         responses: {
           200: {
-            description: 'Catégorie supprimée',
+            description: 'Catégorie supprimée (soft delete)',
             content: {
               'application/json': {
                 schema: z.object({
@@ -263,8 +269,50 @@ export class CategoryController implements Routes {
       }),
       async (c: any) => {
         const id = c.req.param('id')
-        const result = await this.deleteCategory.execute(id)
-        return c.json(result)
+        try {
+          const ok = await this.categoryRepo.softDelete(id)
+          return c.json({ success: ok })
+        } catch (error: any) {
+          return c.json({ success: false, error: error.message })
+        }
+      }
+    )
+
+    // Restore (restauration douce)
+    this.controller.openapi(
+      createRoute({
+        method: 'post',
+        path: '/categories/:id/restore',
+        tags: ['Categories'],
+        summary: 'Restore a soft-deleted category',
+        description: 'Restaure une catégorie supprimée (soft delete)',
+        operationId: 'restoreCategory',
+        request: {
+          params: z.object({ id: z.string() })
+        },
+        responses: {
+          200: {
+            description: 'Catégorie restaurée',
+            content: {
+              'application/json': {
+                schema: z.object({
+                  success: z.boolean(),
+                  data: z.any().optional(),
+                  error: z.string().optional()
+                })
+              }
+            }
+          }
+        }
+      }),
+      async (c: any) => {
+        const id = c.req.param('id')
+        try {
+          const ok = await this.categoryRepo.restore(id)
+          return c.json({ success: ok })
+        } catch (error: any) {
+          return c.json({ success: false, error: error.message })
+        }
       }
     )
   }

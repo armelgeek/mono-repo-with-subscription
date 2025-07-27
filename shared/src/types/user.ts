@@ -7,6 +7,11 @@ export interface User {
   emailVerified: boolean;
   image?: string;
   isAdmin: boolean;
+  role?: 'user' | 'admin' | 'super_admin';
+  banned?: boolean;
+  banReason?: string;
+  banExpires?: string;
+  impersonatedBy?: string;
   createdAt: string;
   updatedAt: string;
 }

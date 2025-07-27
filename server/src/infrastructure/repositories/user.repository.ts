@@ -32,8 +32,13 @@ export class UserRepository implements UserRepositoryInterface {
       trialEndDate: user.trialEndDate || undefined,
       stripeCustomerId: user.stripeCustomerId || undefined,
       stripeSubscriptionId: user.stripeSubscriptionId || undefined,
-      stripePriceId: user.planId || undefined,
+      planId: user.planId || undefined,
       stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd || undefined,
+      banned: user.banned ?? false,
+      banReason: user.banReason || undefined,
+      banExpires: user.banExpires || undefined,
+      impersonatedBy: user.impersonatedBy || undefined,
+      role: user.role || 'user',
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     }
@@ -58,8 +63,13 @@ export class UserRepository implements UserRepositoryInterface {
       trialEndDate: user.trialEndDate || undefined,
       stripeCustomerId: user.stripeCustomerId || undefined,
       stripeSubscriptionId: user.stripeSubscriptionId || undefined,
-      stripePriceId: user.planId || undefined,
+      planId: user.planId || undefined,
       stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd || undefined,
+      banned: user.banned ?? false,
+      banReason: user.banReason || undefined,
+      banExpires: user.banExpires || undefined,
+      impersonatedBy: user.impersonatedBy || undefined,
+      role: user.role || 'user',
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     }))
@@ -113,6 +123,7 @@ export class UserRepository implements UserRepositoryInterface {
         lastname: user.lastname || undefined,
         email: user.email,
         emailVerified: user.emailVerified,
+        lastLoginAt: user.lastLoginAt || null,
         image: user.image || undefined,
         isAdmin: user.isAdmin,
         isTrialActive: user.isTrialActive,
@@ -121,12 +132,15 @@ export class UserRepository implements UserRepositoryInterface {
         trialEndDate: user.trialEndDate || undefined,
         stripeCustomerId: user.stripeCustomerId || undefined,
         stripeSubscriptionId: user.stripeSubscriptionId || undefined,
-        stripePriceId: user.planId || undefined,
+        planId: user.planId || undefined,
         stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd || undefined,
+        banned: user.banned ?? false,
+        banReason: user.banReason || undefined,
+        banExpires: user.banExpires || undefined,
+        impersonatedBy: user.impersonatedBy || undefined,
+        role: user.role || 'user',
         createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        lastLoginAt: user.lastLoginAt || null,
-        role: user.role || 'user'
+        updatedAt: user.updatedAt
       }
     })
 
@@ -157,6 +171,15 @@ export class UserRepository implements UserRepositoryInterface {
       hasUsedTrial: user.hasTrialUsed,
       trialStartDate: user.trialStartDate || undefined,
       trialEndDate: user.trialEndDate || undefined,
+      stripeCustomerId: user.stripeCustomerId || undefined,
+      stripeSubscriptionId: user.stripeSubscriptionId || undefined,
+      planId: user.planId || undefined,
+      stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd || undefined,
+      banned: user.banned ?? false,
+      banReason: user.banReason || undefined,
+      banExpires: user.banExpires || undefined,
+      impersonatedBy: user.impersonatedBy || undefined,
+      role: user.role || 'user',
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     }
