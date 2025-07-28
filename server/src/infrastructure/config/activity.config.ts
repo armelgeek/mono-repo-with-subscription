@@ -29,7 +29,7 @@ export enum ActivityType {
   TRIAL_ENDING_NOTIFICATION = 'TRIAL_ENDING_NOTIFICATION',
   CALL_WEBHOOK = 'CALL_WEBHOOK',
   CANCEL_SUBSCRIPTION = 'CANCEL_SUBSCRIPTION',
-  CHANGE_SUBSCRIPTION_PLAN = 'CHANGE_SUBSCRIPTION_PLAN',
+  CHANGE_SUBSCRIPTION_PLAN = 'CHANGE_SUBSCRIPTION_PLAN'
 }
 
 export const ActivityTypeDescriptions: Record<ActivityType, string> = {
@@ -45,7 +45,7 @@ export const ActivityTypeDescriptions: Record<ActivityType, string> = {
   [ActivityType.GET_CUSTOM_ROLES]: 'Récupération des rôles personnalisés',
   [ActivityType.CREATE_ROLE]: "Création d'un rôle",
   [ActivityType.CREATE_PERMISSION]: "Création d'une permission",
-  [ActivityType.UPDATE_ROLE]: 'Mise à jour d\'un rôle',
+  [ActivityType.UPDATE_ROLE]: "Mise à jour d'un rôle",
   [ActivityType.GET_SUBSCRIPTION_BY_USER]: "Consultation de l'abonnement utilisateur",
   [ActivityType.START_TRIAL]: "Démarrage d'une période d'essai",
   [ActivityType.CANCEL_TRIAL]: "Annulation de l'essai",

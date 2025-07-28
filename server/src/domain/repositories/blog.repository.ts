@@ -1,5 +1,4 @@
 import type {
-  Blog,
   BlogCreate,
   BlogListResponse,
   BlogResponse,

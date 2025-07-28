@@ -58,7 +58,7 @@ export class CreateCategoryUseCase {
         createdAt: now,
         updatedAt: now
       }
-      
+
       const result = await this.categoryRepository.save(category)
       return { success: true, data: result }
     } catch (error) {

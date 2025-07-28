@@ -1,6 +1,6 @@
 import { betterAuth, type User } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { emailOTP, openAPI,admin } from 'better-auth/plugins'
+import { admin, emailOTP, openAPI } from 'better-auth/plugins'
 
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
@@ -68,7 +68,7 @@ export const auth = betterAuth({
     }
   },
   session: {
-    modelName: 'sessions',
+    modelName: 'sessions'
   },
   account: {
     modelName: 'accounts'

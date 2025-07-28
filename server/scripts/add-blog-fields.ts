@@ -4,7 +4,7 @@ import { db } from '../src/infrastructure/database/db'
 async function addBlogFields() {
   try {
     console.log('🔄 Adding new blog fields...')
-    
+
     const queries = [
       sql`ALTER TABLE blog ADD COLUMN IF NOT EXISTS meta_title varchar(255)`,
       sql`ALTER TABLE blog ADD COLUMN IF NOT EXISTS meta_description text`,
@@ -18,11 +18,11 @@ async function addBlogFields() {
       sql`ALTER TABLE blog ADD COLUMN IF NOT EXISTS video_url text`,
       sql`ALTER TABLE blog ADD COLUMN IF NOT EXISTS audio_url text`
     ]
-    
+
     for (const query of queries) {
       await db.execute(query)
     }
-    
+
     console.log('✅ Blog fields added successfully!')
   } catch (error) {
     console.error('❌ Error adding blog fields:', error)

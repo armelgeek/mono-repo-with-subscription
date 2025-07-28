@@ -13,6 +13,13 @@ export {
   verifications
 } from './auth'
 export * from './subscription-plan.schema'
+export { tag } from './tag.schema'
+export { post } from './post.schema'
+export { comment } from './comment.schema'
+export { media } from './media.schema'
+export { postMedia } from './post-media.schema'
+export { postTags } from './post-tags.schema'
+export { category } from './category.schema'
 export const userRolesRelations = relations(userRoles, ({ one }) => ({
   user: one(roles, {
     fields: [userRoles.userId],
@@ -24,8 +31,7 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
   })
 }))
 
-export { blog } from './blog'
-export { blogCategories, categories } from './category'
+// (exports blog, blogCategories, categories supprimés - obsolètes)
 
 export type Role = InferModel<typeof roles>
 export type UserRole = InferModel<typeof userRoles>

@@ -82,7 +82,7 @@ export abstract class BaseRepository<
       updatedAt: rest.updatedAt ? new Date(rest.updatedAt) : now,
       // Transform undefined or empty string to null for database compatibility
       ...Object.keys(rest).reduce((acc, key) => {
-        const value = rest[key];
+        const value = rest[key]
         if (value === undefined || value === '') {
           acc[key] = null
         }
@@ -101,11 +101,11 @@ export abstract class BaseRepository<
       updatedAt: new Date(),
       // Transform undefined or empty string to null for database compatibility
       ...Object.keys(entity).reduce((acc, key) => {
-        const value = (entity as any)[key];
-        if (value === undefined || value === "") {
-          acc[key] = null;
+        const value = (entity as any)[key]
+        if (value === undefined || value === '') {
+          acc[key] = null
         }
-        return acc;
+        return acc
       }, {} as any)
     }
   }

@@ -179,7 +179,7 @@ export class BlogController implements Routes {
           }
         }
       }),
-      async (c:any) => {
+      async (c: any) => {
         const body = await c.req.json()
         const result = await this.createBlog.execute(body)
         return c.json(result)
@@ -219,7 +219,7 @@ export class BlogController implements Routes {
           }
         }
       }),
-      async (c:any) => {
+      async (c: any) => {
         const id = c.req.param('id')
         const body = await c.req.json()
         const result = await this.updateBlog.execute(id, body)
