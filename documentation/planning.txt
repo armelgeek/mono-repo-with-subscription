@@ -149,47 +149,7 @@
 - [ ] Performance optimisée sur mobile
 - [ ] Progressive Web App (PWA)
 
-### Spécifications Backend
 
-#### API Endpoints
-
-```javascript
-// Frontend Public API
-GET    /api/public/posts             // Articles publics paginés
-GET    /api/public/posts/:slug       // Article par slug
-GET    /api/public/categories        // Catégories avec compteurs
-GET    /api/public/tags              // Tags populaires
-GET    /api/public/search            // Recherche full-text
-GET    /api/public/posts/related/:id // Articles similaires
-GET    /api/public/sitemap           // Plan de site
-GET    /api/public/rss               // Flux RSS
-```
-
-#### Services Backend
-
-```javascript
-// PublicContentService
-class PublicContentService {
-  async getPublishedPosts(page, limit, filters)
-  async getPostBySlug(slug)
-  async searchPosts(query, filters)
-  async getRelatedPosts(postId, limit = 5)
-  async getCategoriesWithCounts()
-  async getPopularTags(limit = 20)
-  async incrementViewCount(postId)
-}
-
-// SearchService
-class SearchService {
-  async indexPost(post)
-  async searchFullText(query, filters)
-  async getSuggestions(partialQuery)
-  async getPopularSearches()
-  async logSearch(query, resultsCount)
-}
-```
-
----
 
 ## 💬 Epic 3 : Système de Commentaires
 
@@ -255,60 +215,7 @@ class SearchService {
 - [ ] Filtrage par mots-clés
 - [ ] Score de confiance pour chaque commentaire
 
-### Spécifications Backend
 
-#### API Endpoints
-
-```javascript
-// Commentaires publics
-POST   /api/public/posts/:id/comments     // Poster un commentaire
-GET    /api/public/posts/:id/comments     // Récupérer commentaires
-
-// Modération (admin)
-GET    /api/admin/comments                // Liste commentaires à modérer
-PUT    /api/admin/comments/:id/approve    // Approuver
-PUT    /api/admin/comments/:id/reject     // Rejeter
-PUT    /api/admin/comments/:id/spam       // Marquer spam
-DELETE /api/admin/comments/:id            // Supprimer
-POST   /api/admin/comments/bulk-action    // Actions en lot
-
-// Notifications
-GET    /api/notifications/comments        // Notifications utilisateur
-PUT    /api/notifications/:id/read        // Marquer comme lu
-```
-
-#### Services Backend
-
-```javascript
-// CommentService
-class CommentService {
-  async createComment(postId, commentData, userId = null)
-  async getCommentsForPost(postId, status = 'approved')
-  async moderateComment(commentId, action, moderatorId)
-  async checkSpam(commentData)
-  async sendNotifications(comment)
-  async getCommentThread(parentId)
-}
-
-// ModerationService
-class ModerationService {
-  async getPendingComments(filters)
-  async bulkModerate(commentIds, action, moderatorId)
-  async addToBlacklist(type, value)
-  async getSpamScore(commentData)
-  async logModerationAction(action, commentId, moderatorId)
-}
-
-// NotificationService
-class NotificationService {
-  async notifyNewComment(comment)
-  async notifyCommentReply(comment, parentComment)
-  async sendDigest(userId, period = 'weekly')
-  async markAsRead(notificationId, userId)
-}
-```
-
----
 
 ## 📊 Epic 4 : Administration et Analytics
 

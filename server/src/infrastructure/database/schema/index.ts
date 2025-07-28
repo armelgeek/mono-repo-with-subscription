@@ -31,7 +31,6 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
   })
 }))
 
-// (exports blog, blogCategories, categories supprimés - obsolètes)
 
 export type Role = InferModel<typeof roles>
 export type UserRole = InferModel<typeof userRoles>
