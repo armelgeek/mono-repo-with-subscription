@@ -1,5 +1,11 @@
 // Mapping frontend pour les descriptions d'activité
 export const ActivityTypeDescriptions: Record<string, string> = {
+  // Types dashboard génériques
+  project_created: 'Projet créé',
+  meeting_completed: 'Réunion terminée',
+  invoice_sent: 'Facture envoyée',
+  payment_received: 'Paiement reçu',
+  task_completed: 'Tâche complétée',
   SIGN_UP: 'Inscription',
   SIGN_IN: 'Connexion',
   SIGN_OUT: 'Déconnexion',

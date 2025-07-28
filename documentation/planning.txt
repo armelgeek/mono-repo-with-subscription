@@ -1,0 +1,387 @@
+## ✍️ Epic 1 : Création et Gestion de Contenu
+
+### User Stories
+
+#### US-01: Éditeur d'articles (WYSIWYG)
+**En tant qu'** auteur  
+**Je veux** disposer d'un éditeur visuel riche  
+**Afin de** créer du contenu formaté facilement  
+
+**Critères d'acceptation:**
+- [ ] Interface WYSIWYG avec barre d'outils (gras, italique, liens, listes, etc.)
+- [ ] Mode prévisualisation en temps réel
+- [ ] Sauvegarde automatique toutes les 30 secondes
+- [ ] Support du markdown
+- [ ] Insert d'images par drag & drop
+- [ ] Compteur de mots et temps de lecture estimé
+
+#### US-02: Gestion des brouillons et publication
+**En tant qu'** auteur  
+**Je veux** sauvegarder mes articles en brouillon et les publier quand prêt  
+**Afin de** travailler progressivement sur mes contenus  
+
+**Critères d'acceptation:**
+- [ ] Statuts: brouillon, en révision, publié, archivé
+- [ ] Changement de statut avec confirmation
+- [ ] Historique des versions
+- [ ] Workflow d'approbation pour les auteurs non-admin
+
+#### US-03: Système de catégories et tags
+**En tant qu'** auteur  
+**Je veux** organiser mes articles avec des catégories et tags  
+**Afin de** faciliter la navigation et recherche  
+
+**Critères d'acceptation:**
+- [ ] Création/édition de catégories avec couleurs
+- [ ] Auto-complétion pour les tags existants
+- [ ] Suggestion de tags basée sur le contenu
+- [ ] Un article = une catégorie + plusieurs tags
+- [ ] Gestion des slugs automatiques
+
+#### US-04: Upload et gestion des médias
+**En tant qu'** auteur  
+**Je veux** uploader et organiser mes images/fichiers  
+**Afin d'** enrichir mes articles  
+
+**Critères d'acceptation:**
+- [ ] Upload multiple par drag & drop
+- [ ] Redimensionnement automatique des images
+- [ ] Bibliothèque de médias avec filtres
+- [ ] Génération automatique de différentes tailles
+- [ ] Alt text et descriptions pour l'accessibilité
+
+#### US-05: Prévisualisation des articles
+**En tant qu'** auteur  
+**Je veux** prévisualiser mon article avant publication  
+**Afin de** vérifier le rendu final  
+
+**Critères d'acceptation:**
+- [ ] Prévisualisation desktop/mobile/tablet
+- [ ] URL de prévisualisation partageable (temporaire)
+- [ ] Aperçu des métadonnées SEO
+- [ ] Simulation de l'affichage sur les réseaux sociaux
+
+#### US-06: Planification de publication
+**En tant qu'** auteur  
+**Je veux** programmer la publication de mes articles  
+**Afin de** publier au moment optimal  
+
+**Critères d'acceptation:**
+- [ ] Sélecteur de date/heure de publication
+- [ ] Liste des publications programmées
+- [ ] Notification de publication réussie
+- [ ] Possibilité d'annuler une publication programmée
+
+## 🎨 Epic 2 : Interface Frontend et Navigation
+
+### User Stories
+
+#### US-07: Page d'accueil du blog
+**En tant que** visiteur  
+**Je veux** voir les derniers articles sur la page d'accueil  
+**Afin de** découvrir le contenu récent  
+
+**Critères d'acceptation:**
+- [ ] Affichage des 10 derniers articles publiés
+- [ ] Articles épinglés en priorité
+- [ ] Pagination ou scroll infini
+- [ ] Sidebar avec catégories populaires
+- [ ] Barre de recherche proéminente
+
+#### US-08: Pages de listing des articles
+**En tant que** visiteur  
+**Je veux** parcourir tous les articles avec des filtres  
+**Afin de** trouver le contenu qui m'intéresse  
+
+**Critères d'acceptation:**
+- [ ] Filtres par catégorie, tag, date, auteur
+- [ ] Tri par date, popularité, titre
+- [ ] Affichage grille ou liste
+- [ ] Métadonnées visibles (date, auteur, temps de lecture)
+- [ ] Load more ou pagination
+
+#### US-09: Pages individuelles d'articles
+**En tant que** lecteur  
+**Je veux** lire un article dans une mise en page optimisée  
+**Afin d'** avoir une expérience de lecture agréable  
+
+**Critères d'acceptation:**
+- [ ] Typographie optimisée pour la lecture
+- [ ] Table des matières automatique
+- [ ] Boutons de partage social
+- [ ] Articles similaires en fin
+- [ ] Estimation du temps de lecture
+- [ ] Mode sombre/clair
+
+#### US-10: Navigation par catégories/tags
+**En tant que** visiteur  
+**Je veux** explorer le contenu par thématiques  
+**Afin de** découvrir des articles sur mes sujets favoris  
+
+**Critères d'acceptation:**
+- [ ] Pages dédiées pour chaque catégorie/tag
+- [ ] Nuage de tags interactif
+- [ ] Fil d'Ariane pour la navigation
+- [ ] Compteur d'articles par catégorie
+- [ ] Descriptions des catégories
+
+#### US-11: Système de recherche
+**En tant que** visiteur  
+**Je veux** rechercher du contenu spécifique  
+**Afin de** trouver rapidement ce qui m'intéresse  
+
+**Critères d'acceptation:**
+- [ ] Recherche full-text dans titre et contenu
+- [ ] Auto-complétion des suggestions
+- [ ] Filtres avancés (date, catégorie, auteur)
+- [ ] Mise en évidence des termes recherchés
+- [ ] Sauvegarde des recherches populaires
+
+#### US-12: Interface responsive
+**En tant qu'** utilisateur mobile  
+**Je veux** une interface adaptée à mon écran  
+**Afin d'** avoir une expérience optimale sur tous devices  
+
+**Critères d'acceptation:**
+- [ ] Responsive design (mobile-first)
+- [ ] Menu burger sur mobile
+- [ ] Touch-friendly (boutons suffisamment grands)
+- [ ] Performance optimisée sur mobile
+- [ ] Progressive Web App (PWA)
+
+### Spécifications Backend
+
+#### API Endpoints
+
+```javascript
+// Frontend Public API
+GET    /api/public/posts             // Articles publics paginés
+GET    /api/public/posts/:slug       // Article par slug
+GET    /api/public/categories        // Catégories avec compteurs
+GET    /api/public/tags              // Tags populaires
+GET    /api/public/search            // Recherche full-text
+GET    /api/public/posts/related/:id // Articles similaires
+GET    /api/public/sitemap           // Plan de site
+GET    /api/public/rss               // Flux RSS
+```
+
+#### Services Backend
+
+```javascript
+// PublicContentService
+class PublicContentService {
+  async getPublishedPosts(page, limit, filters)
+  async getPostBySlug(slug)
+  async searchPosts(query, filters)
+  async getRelatedPosts(postId, limit = 5)
+  async getCategoriesWithCounts()
+  async getPopularTags(limit = 20)
+  async incrementViewCount(postId)
+}
+
+// SearchService
+class SearchService {
+  async indexPost(post)
+  async searchFullText(query, filters)
+  async getSuggestions(partialQuery)
+  async getPopularSearches()
+  async logSearch(query, resultsCount)
+}
+```
+
+---
+
+## 💬 Epic 3 : Système de Commentaires
+
+### User Stories
+
+#### US-13: Commentaires publics/modérés
+**En tant que** lecteur  
+**Je veux** commenter les articles  
+**Afin de** participer aux discussions  
+
+**Critères d'acceptation:**
+- [ ] Formulaire de commentaire simple (nom, email, message)
+- [ ] Commentaires soumis en attente de modération
+- [ ] Possibilité de commenter anonymement ou connecté
+- [ ] Formatage basique du texte (liens, gras, italique)
+- [ ] Validation anti-spam (captcha si nécessaire)
+
+#### US-14: Réponses aux commentaires (threading)
+**En tant que** lecteur  
+**Je veux** répondre aux commentaires existants  
+**Afin de** créer des discussions organisées  
+
+**Critères d'acceptation:**
+- [ ] Bouton "Répondre" sur chaque commentaire
+- [ ] Indentation visuelle des réponses
+- [ ] Limitation à 3 niveaux de profondeur
+- [ ] Notification du commentaire parent
+- [ ] Collapse/expand des fils de discussion
+
+#### US-15: Modération des commentaires
+**En tant qu'** administrateur  
+**Je veux** modérer les commentaires  
+**Afin de** maintenir la qualité des discussions  
+
+**Critères d'acceptation:**
+- [ ] Interface de modération avec statuts (approuvé, rejeté, spam)
+- [ ] Actions en lot sur plusieurs commentaires
+- [ ] Système de signalement par les utilisateurs
+- [ ] Blacklist de mots/emails automatique
+- [ ] Historique des actions de modération
+
+#### US-16: Notifications de nouveaux commentaires
+**En tant qu'** auteur  
+**Je veux** être notifié des nouveaux commentaires  
+**Afin de** pouvoir interagir avec mes lecteurs  
+
+**Critères d'acceptation:**
+- [ ] Email de notification aux auteurs
+- [ ] Notification pour les réponses à mes commentaires
+- [ ] Préférences de notification configurables
+- [ ] Résumé hebdomadaire des commentaires
+- [ ] Badge de notification dans l'admin
+
+#### US-17: Anti-spam et filtrage
+**En tant qu'** administrateur  
+**Je veux** des outils anti-spam automatiques  
+**Afin de** réduire la charge de modération  
+
+**Critères d'acceptation:**
+- [ ] Détection automatique du spam (Akismet)
+- [ ] Rate limiting par IP
+- [ ] Blacklist de domaines email
+- [ ] Filtrage par mots-clés
+- [ ] Score de confiance pour chaque commentaire
+
+### Spécifications Backend
+
+#### API Endpoints
+
+```javascript
+// Commentaires publics
+POST   /api/public/posts/:id/comments     // Poster un commentaire
+GET    /api/public/posts/:id/comments     // Récupérer commentaires
+
+// Modération (admin)
+GET    /api/admin/comments                // Liste commentaires à modérer
+PUT    /api/admin/comments/:id/approve    // Approuver
+PUT    /api/admin/comments/:id/reject     // Rejeter
+PUT    /api/admin/comments/:id/spam       // Marquer spam
+DELETE /api/admin/comments/:id            // Supprimer
+POST   /api/admin/comments/bulk-action    // Actions en lot
+
+// Notifications
+GET    /api/notifications/comments        // Notifications utilisateur
+PUT    /api/notifications/:id/read        // Marquer comme lu
+```
+
+#### Services Backend
+
+```javascript
+// CommentService
+class CommentService {
+  async createComment(postId, commentData, userId = null)
+  async getCommentsForPost(postId, status = 'approved')
+  async moderateComment(commentId, action, moderatorId)
+  async checkSpam(commentData)
+  async sendNotifications(comment)
+  async getCommentThread(parentId)
+}
+
+// ModerationService
+class ModerationService {
+  async getPendingComments(filters)
+  async bulkModerate(commentIds, action, moderatorId)
+  async addToBlacklist(type, value)
+  async getSpamScore(commentData)
+  async logModerationAction(action, commentId, moderatorId)
+}
+
+// NotificationService
+class NotificationService {
+  async notifyNewComment(comment)
+  async notifyCommentReply(comment, parentComment)
+  async sendDigest(userId, period = 'weekly')
+  async markAsRead(notificationId, userId)
+}
+```
+
+---
+
+## 📊 Epic 4 : Administration et Analytics
+
+### User Stories
+
+#### US-18: Dashboard administrateur
+**En tant qu'** administrateur  
+**Je veux** un tableau de bord avec les métriques clés  
+**Afin de** suivre l'activité du blog  
+
+**Critères d'acceptation:**
+- [ ] Widgets: articles publiés, commentaires, vues, utilisateurs
+- [ ] Graphiques des tendances (7j, 30j, 90j)
+- [ ] Liste des articles populaires
+- [ ] Activité récente (commentaires, publications)
+- [ ] Alertes système (erreurs, spam)
+
+#### US-19: Statistiques et analytics
+**En tant qu'** administrateur  
+**Je veux** des analytics détaillés  
+**Afin d'** analyser les performances du blog  
+
+**Critères d'acceptation:**
+- [ ] Statistiques de trafic par article
+- [ ] Sources de trafic (direct, social, search)
+- [ ] Données démographiques des visiteurs
+- [ ] Taux d'engagement des articles
+- [ ] Export des données en CSV/Excel
+
+#### US-20: Gestion des utilisateurs
+**En tant qu'** administrateur  
+**Je veux** gérer les comptes utilisateurs  
+**Afin de** contrôler les accès et permissions  
+
+**Critères d'acceptation:**
+- [ ] Liste des utilisateurs avec filtres
+- [ ] Création/modification des comptes
+- [ ] Gestion des rôles et permissions
+- [ ] Suspension/activation des comptes
+- [ ] Log des actions utilisateurs
+
+#### US-21: Modération de contenu
+**En tant qu'** éditeur  
+**Je veux** réviser le contenu avant publication  
+**Afin de** maintenir la qualité éditoriale  
+
+**Critères d'acceptation:**
+- [ ] File d'attente des articles en révision
+- [ ] Système de commentaires éditoriaux
+- [ ] Workflow d'approbation configurable
+- [ ] Historique des révisions
+- [ ] Notifications aux auteurs
+
+#### US-22: Configuration du blog
+**En tant qu'** administrateur  
+**Je veux** configurer les paramètres du blog  
+**Afin de** personnaliser le comportement de la plateforme  
+
+**Critères d'acceptation:**
+- [ ] Paramètres généraux (nom, description, logo)
+- [ ] Configuration SEO (meta tags par défaut)
+- [ ] Paramètres de commentaires (modération, notifications)
+- [ ] Intégrations tierces (analytics, réseaux sociaux)
+- [ ] Paramètres de performance (cache, optimisation)
+
+#### US-23: Sauvegarde/restauration
+**En tant qu'** administrateur  
+**Je veux** sauvegarder et restaurer le contenu  
+**Afin de** protéger les données du blog  
+
+**Critères d'acceptation:**
+- [ ] Sauvegarde automatique quotidienne
+- [ ] Export complet du contenu (JSON/XML)
+- [ ] Sauvegarde sélective (articles, médias, settings)
+- [ ] Interface de restauration
+- [ ] Vérification d'intégrité des sauvegardes

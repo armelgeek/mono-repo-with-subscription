@@ -8,13 +8,14 @@
   "workspaces": [
     "./server",
     "./client",
+    "./mobile",
     "./shared"
   ],
   "scripts": {
     "dev:client": "cd client && bun run dev",
     "dev:server": "cd server && bun run dev",
     "dev:shared": "cd shared && bun run dev",
-    "dev": "concurrently \"bun run dev:shared\" \"bun run dev:server\" \"bun run dev:client\"",
+    "dev": "concurrently \"bun run dev:shared\" \"bun run dev:server\" \"bun run dev:client\" \"bun run expo:dev\" ",
     "build:client": "cd client && bun run build",
     "build:server": "cd server && bun run build",
     "build:shared": "cd shared && bun run build",
@@ -31,13 +32,13 @@
     "deploy:server": "cd server && bun run deploy",
     "create:superuser": "cd server && bun run create:superuser",
     "stripe:listen": "cd server && bun run stripe:listen",
-    "expo:start": "cd mobile && expo start",
-    "expo:dev": "cd mobile && expo start -c",
+    "expo:start": "cd mobile && bun run start",
+    "expo:dev": "cd mobile && bun run dev",
     "expo:reset-project": "cd mobile && node ./scripts/reset-project.js",
-    "expo:android": "cd mobile && DARK_MODE=media expo start --android",
-    "expo:ios": "cd mobile && DARK_MODE=media expo start --ios",
-    "expo:web": "cd mobile && DARK_MODE=media expo start --web",
-    "expo:lint": "cd mobile && expo lint",
+    "expo:android": "cd mobile && DARK_MODE=media bun run android",
+    "expo:ios": "cd mobile && DARK_MODE=media bun run ios",
+    "expo:web": "cd mobile && DARK_MODE=media bun run web",
+    "expo:lint": "cd mobile && bun run lint",
     "expo:ui:add": "npx gluestack-ui add"
   },
   "keywords": [
