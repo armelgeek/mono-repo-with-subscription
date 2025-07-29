@@ -123,5 +123,5 @@ export const ActivityTypeDescriptions: Record<ActivityType, string> = {
   [ActivityType.DELETE_POST_TAG]: 'Suppression de tag d’un article',
   [ActivityType.CREATE_USER_ROLE]: 'Création d’un rôle utilisateur',
   [ActivityType.UPDATE_USER_ROLE]: 'Mise à jour d’un rôle utilisateur',
-  [ActivityType.DELETE_USER_ROLE]: 'Suppression d’un rôle utilisateur',
+  [ActivityType.DELETE_USER_ROLE]: 'Suppression d’un rôle utilisateur'
 }

@@ -29,7 +29,13 @@ export class PostController {
           body: {
             content: {
               'application/json': {
-                schema: PostSchema.omit({ id: true, created_at: true, updated_at: true })
+                schema: PostSchema.omit({
+                  id: true,
+                  author_id: true,
+                  category_id: true,
+                  created_at: true,
+                  updated_at: true
+                })
               }
             }
           }
@@ -46,9 +52,16 @@ export class PostController {
         }
       }),
       async (c: any) => {
+        const user = c.get('user')
+        if (!user) {
+          return c.json({ success: false, error: 'Unauthorized' }, 401)
+        }
         const useCase = new CreatePostUseCase(this.postRepository)
         const body = await c.req.json()
-        const result = await useCase.execute(body)
+        const result = await useCase.execute({
+          ...body,
+          author_id: user.id
+        })
         return c.json(result, result.success ? 201 : 400)
       }
     )

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 
-import { useSubscriptionPlans } from '../hooks/use-subscription-plan';
+import { usePublicSubscriptionPlans } from '../hooks/use-subscription-plan';
 import { useCurrentSubscription, useCreateSubscription, useChangeSubscriptionPlan } from '../hooks/use-subscription';
 import type { SubscriptionPlan } from '../subscription-plan.schema';
 
@@ -24,7 +24,7 @@ type CurrentSubscription = {
 
 
 export function SubscriptionPlansSelector({ onSuccess }: { onSuccess?: () => void }) {
-  const { data: plansResp, isLoading } = useSubscriptionPlans();
+  const { data: plansResp, isLoading } = usePublicSubscriptionPlans();
   const { data: currentResp } = useCurrentSubscription();
   const plans = plansResp?.data as SubscriptionPlan[] | undefined;
  

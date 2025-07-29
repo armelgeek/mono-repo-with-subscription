@@ -4,12 +4,12 @@ export const API_ENDPOINTS = {
     version: "v1",
   },
   blog: {
-    base: "/blogs",
-    list: "/blogs",
-    detail: (id: string) => `/blogs/${id}`,
-    create: "/blogs",
-    update: (id: string) => `/blogs/${id}`,
-    delete: (id: string) => `/blogs/${id}`,
+    base: "/v1/posts",
+    list: "/v1/posts",
+    detail: (id: string) => `/v1/posts/${id}`,
+    create: "/v1/posts",
+    update: (id: string) => `/v1/posts/${id}`,
+    delete: (id: string) => `/v1/posts/${id}`,
   },
   user: {
     list: "/v1/admin/users",

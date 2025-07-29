@@ -1,29 +1,32 @@
 "use client"
-import { useBlog } from '@/features/blog/hooks/use-blog'
-import { Calendar, User, ArrowLeft, Clock, Tag } from 'lucide-react'
+import { useParams } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
+import { postService } from '@/features/blog/blog.service'
+import { Calendar, ArrowLeft, Clock, Tag } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/shared/components/atoms/ui/button'
 import { notFound } from 'next/navigation'
-import type { Blog, BlogListResponse } from '@shared/types'
+import { API_ENDPOINTS } from '@/shared/config/api'
 
-interface BlogDetailPageProps {
-  params: {
-    id: string
-  }
-}
+import dynamic from 'next/dynamic'
+import type { Post } from '@/features/blog/blog.schema'
 
-// Type guard pour vérifier si c'est un Blog et non une BlogListResponse
-function isBlog(data: Blog | BlogListResponse): data is Blog {
-  return 'title' in data && 'content' in data
-}
+const PostEditForm = dynamic(() => import('@/features/blog/components/post-edit-form'), { ssr: false })
+const PostDeleteButton = dynamic(() => import('@/features/blog/components/post-delete-button'), { ssr: false })
 
-export default function BlogDetailPage({ params }: BlogDetailPageProps) {
-  const { data: response, isLoading, error } = useBlog(params.id)
-  
-  // Extraire le blog de la réponse
-  const blogData = response?.success ? response.data : null
-  const blog = blogData && isBlog(blogData) ? blogData : null
-  
+export default function BlogDetailPage() {
+  const params = useParams()
+  const id = params?.id as string
+
+  const { data, isLoading, isError } = useQuery<Post>({
+    queryKey: ['post', id],
+    queryFn: async () => {
+      const res = await postService.get(API_ENDPOINTS.blog.detail(id))
+      return res.data as Post
+    },
+    enabled: !!id,
+  })
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -42,8 +45,8 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
       </div>
     )
   }
-  
-  if (error || !blog) {
+
+  if (isError || !data) {
     return notFound()
   }
 
@@ -69,53 +72,56 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
           <div className="h-64 md:h-96 bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center">
             <div className="text-primary/60 text-6xl">📄</div>
           </div>
-          
           <div className="p-8 md:p-12">
             {/* Status badge */}
             <div className="mb-6">
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                blog.published 
+                data.status === 'published' 
                   ? 'bg-green-100 text-green-800' 
-                  : 'bg-yellow-100 text-yellow-800'
+                  : data.status === 'draft'
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : 'bg-gray-100 text-gray-800'
               }`}>
-                {blog.published ? '✓ Article publié' : '⏳ Brouillon'}
+                {data.status === 'published' ? '✓ Article publié' : data.status === 'draft' ? '⏳ Brouillon' : 'Archivé'}
               </span>
             </div>
-
             {/* Title */}
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              {blog.title}
+              {data.title}
             </h1>
-            
             {/* Meta information */}
             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 mb-8 pb-8 border-b">
               <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span>Auteur #{blog.authorId}</span>
+                <span>Auteur #{data.author_id}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>Publié le {new Date(blog.createdAt).toLocaleDateString('fr-FR', {
+                <span>Publié le {new Date(data.created_at).toLocaleDateString('fr-FR', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
                 })}</span>
               </div>
-              {blog.updatedAt !== blog.createdAt && (
+              {data.updated_at !== data.created_at && (
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  <span>Modifié le {new Date(blog.updatedAt).toLocaleDateString('fr-FR')}</span>
+                  <span>Modifié le {new Date(data.updated_at).toLocaleDateString('fr-FR')}</span>
                 </div>
               )}
             </div>
-            
             {/* Content */}
             <div className="prose prose-lg max-w-none">
               <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                {blog.content}
+                {data.content}
               </div>
             </div>
-            
+
+            {/* Formulaire d'édition et suppression */}
+            <div className="mt-12">
+              <PostEditForm post={data} />
+              <PostDeleteButton id={data.id} />
+            </div>
+
             {/* Categories/Tags (si disponibles) */}
             <div className="mt-12 pt-8 border-t">
               <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -125,7 +131,6 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
             </div>
           </div>
         </div>
-        
         {/* Navigation vers d'autres articles */}
         <div className="mt-12 bg-white rounded-xl shadow-sm p-8">
           <h3 className="text-xl font-bold text-gray-900 mb-6">Continuer la lecture</h3>

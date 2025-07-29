@@ -10,7 +10,7 @@ export const post = pgTable('post', {
   status: text('status').notNull().default('draft'),
   is_featured: boolean('is_featured').default(false),
   view_count: integer('view_count').default(0),
-  author_id: integer('author_id').notNull(),
+  author_id: text('author_id').notNull(),
   category_id: integer('category_id'),
   meta_title: text('meta_title'),
   meta_description: text('meta_description'),

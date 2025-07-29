@@ -1,7 +1,6 @@
 import process from 'node:process'
 import { App } from './app'
 import {
-  BlogController,
   PermissionController,
   SubscriptionController,
   SubscriptionPlanController,
@@ -9,11 +8,12 @@ import {
 } from './infrastructure/controllers'
 import { ActivityLogController } from './infrastructure/controllers/activity-log.controller'
 import { CategoryController } from './infrastructure/controllers/category.controller'
+import { PostController } from './infrastructure/controllers/post.controller'
 import '@/infrastructure/schedulers'
 const app = new App([
   new UserController(),
   new PermissionController(),
-  new BlogController(),
+  new PostController(),
   new CategoryController(),
   new ActivityLogController(),
   new SubscriptionController(),

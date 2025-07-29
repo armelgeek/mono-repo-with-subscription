@@ -1,6 +1,5 @@
 import { IUseCase } from '../../../domain/types/use-case.type'
 import { ActivityType } from '../../../infrastructure/config/activity.config'
-import type { marked as MarkedType } from 'marked'
 
 interface Params {
   content: string

@@ -31,6 +31,5 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
   })
 }))
 
-
 export type Role = InferModel<typeof roles>
 export type UserRole = InferModel<typeof userRoles>
